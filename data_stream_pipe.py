@@ -99,9 +99,10 @@ def consume(conn):
     consumer_socketio = SocketIO(message_queue="redis://")
     while True:
         buffer = conn.recv()
+        print(buffer)
         for point in buffer:
             if ed.check_value(point):
-                consumer_socketio.emit("tunr_on")            
+                consumer_socketio.emit("tunr_on")
 
 @app.route('/')
 def index():
