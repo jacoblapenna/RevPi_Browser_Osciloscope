@@ -118,6 +118,6 @@ if __name__ == "__main__":
                  host=ip,
                  port=8080,
                  use_reloader=True,
-                 debug=False,
+                 debug=True,
                  extra_files=['templates/index.html',
                               'templates/landing.html'])
