@@ -1,0 +1,45 @@
+:root {
+	--panel_color: #1a1a1a;
+  --meter_background: #3f3f3f;
+  --text_color: #747474;
+	--meter_color: #00D81C;
+	--ch_1_color: #D1D900;
+	--ch_2_color: #0088FF;
+	--ch_3_color: #00D81C;
+	--ch_4_color: #FF001E;
+}
+
+html {
+  height: 100%;
+}
+
+body {
+  min-height: 100%;
+  margin: 0;
+  padding: 0;
+  background-color: var(--panel_color);
+}
+
+
+#plot_container {
+  position: absolute;
+  top: 7%;
+  left: 3%;
+  width: 60%;
+  height: 65%;
+}
+
+#plot {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: var(--meter_background);
+}
+
+#start {
+	position: absolute;
+	top: 80%;
+  left: 50%;
+}

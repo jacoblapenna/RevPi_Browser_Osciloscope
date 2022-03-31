@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+  <title>Pipe Prototype</title>
+
+  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/styles.css') }}">
+
+  <script src="{{ url_for('static', filename='js/jquery-3.6.0.min.js') }}"></script>
+
+  <script src="{{ url_for('static', filename='js/socket.io.min.js') }}"></script>
+
+</head>
+<body>
+
+	<div id="plot_container">
+		<canvas id="plot"></canvas>
+  </div>
+  <button type="button" id="start">Acquire</button>
+
+  <!-- load app scripts -->
+
+  <script type="module" src="{{ url_for('static', filename='js/main.mjs') }}">
+  </script>
+
+</body>
+</html>

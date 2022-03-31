@@ -1,0 +1,8 @@
+# specify that all clones of this package should ignore a python virtual
+# environment within the .env directory, __pycache__, egg installation files,
+# and db files in the dta directory etc
+
+__pycache__/
+.env/
+*.egg*
+dta/
