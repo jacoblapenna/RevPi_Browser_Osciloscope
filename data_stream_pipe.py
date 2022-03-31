@@ -12,15 +12,15 @@ from multiprocessing import Pipe, Process
 import random
 import time
 from collections import deque
-# import redis
+import redis
 import socket
 
 from flask import Flask, render_template
 from flask_socketio import SocketIO
 
 app = Flask(__name__)
-# socketio = SocketIO(app, message_queue="redis://")
-socketio = SocketIO(app)
+socketio = SocketIO(app, message_queue="redis://")
+# socketio = SocketIO(app)
 
 def get_ip_address():
     # get the server's IP on which to serve app
@@ -62,12 +62,16 @@ class ExtremaDetector:
             if val < self._mx - self._threshold:
                 self._mn = val
                 self._look_for_maxima = False
-                print(f"Local maxima detected at {(self._mx_t, self._mx)}")
+                # print(f"Local maxima detected at {(self._mx_t, self._mx)}")
+                return (self._mx_t, self._mx)
         else:
             if val > self._mn + self._threshold:
                 self._mx = val
                 self._look_for_maxima = True
-                print(f"Local minima detected at {(self._mn_t, self._mn)}")
+                # print(f"Local minima detected at {(self._mn_t, self._mn)}")
+                return (self._mn_t, self._mn)
+
+        return None
 
 
 class DataStreamer:
@@ -92,10 +96,12 @@ class DataStreamer:
 def consume(conn):
     print("Consuming...")
     ed = ExtremaDetector()
+    consumer_socketio = SocketIO(message_queue="redis://")
     while True:
         buffer = conn.recv()
         for point in buffer:
-            ed.check_value(point)
+            if ed.check_value(point):
+                consumer_socketio.emit("tunr_on")            
 
 @app.route('/')
 def index():
@@ -122,5 +128,4 @@ if __name__ == "__main__":
                  port=8080,
                  use_reloader=True,
                  debug=True,
-                 extra_files=['templates/index.html',
-                              'templates/landing.html'])
+                 extra_files=["templates/index.html"])
