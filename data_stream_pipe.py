@@ -4,8 +4,8 @@ Created on Tue Mar 29 09:16:40 2022
 
 @author: jlapenna
 """
-import eventlet
-eventlet.monkey_patch(thread=False)
+# import eventlet
+# eventlet.monkey_patch(thread=False)
 
 import numpy as np
 from multiprocessing import Pipe, Process
@@ -19,7 +19,8 @@ from flask import Flask, render_template
 from flask_socketio import SocketIO
 
 app = Flask(__name__)
-socketio = SocketIO(app, message_queue="redis://")
+# socketio = SocketIO(app, message_queue="redis://")
+socketio = SocketIO(app)
 
 def get_ip_address():
     # get the server's IP on which to serve app
@@ -110,7 +111,7 @@ def stream_data():
 
 if __name__ == "__main__":
 
-    redis.Redis()
+    # redis.Redis()
     # socketio.run(app, use_reloader=True, debug=True, extra_files=['/templates/index.html'])
     ip = get_ip_address()
     socketio.run(app,
