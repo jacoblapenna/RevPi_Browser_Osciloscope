@@ -12,7 +12,7 @@ from multiprocessing import Pipe, Process
 import random
 import time
 from collections import deque
-import redis
+# import redis
 import socket
 
 from flask import Flask, render_template
