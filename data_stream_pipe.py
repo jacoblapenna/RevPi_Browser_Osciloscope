@@ -72,6 +72,9 @@ class ExtremaDetector:
 
 class DataStreamer:
 
+    """
+    pull from AIO on revpi here when ready
+    """
     def __init__(self):
         self._freq = 0.1
         self._dt = 0.001
