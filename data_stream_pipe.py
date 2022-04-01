@@ -4,8 +4,8 @@ Created on Tue Mar 29 09:16:40 2022
 
 @author: jlapenna
 """
-# import eventlet
-# eventlet.monkey_patch(thread=False)
+import eventlet
+eventlet.monkey_patch(thread=False)
 
 import numpy as np
 from multiprocessing import Pipe, Process
@@ -19,8 +19,8 @@ from flask import Flask, render_template
 from flask_socketio import SocketIO
 
 app = Flask(__name__)
-# socketio = SocketIO(app, message_queue="redis://")
-socketio = SocketIO(app)
+socketio = SocketIO(app, message_queue="redis://", async_mode="eventlet")
+# socketio = SocketIO(app)
 
 def get_ip_address():
     # get the server's IP on which to serve app
