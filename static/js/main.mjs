@@ -4,7 +4,9 @@ var socket =  io.connect(location.origin);
 var stream_running = false;
 var control_button = document.getElementById("start");
 
-control_button.addEventListener("click", function() {
+control_button.addEventListener("click", function(e) {
+  e.stopPropagation()
+  e.preventDefault();
   console.log(`Stream control requested...`);
   if (stream_running) {
     stream_running = false;
