@@ -1,13 +1,16 @@
 
 // setup socket
 var socket =  io.connect(location.origin);
-var stream_started = false;
+var stream_running = false;
 
 document.getElementById("start").addEventListener("click", start_stream);
 
 function start_stream() {
-  if (!stream_started) {
-    stream_started = true;
+  if (stream_started) {
+    stream_running = false;
+    socket.emit("stop_stream");
+  } else {
+    stream_running = true;
     socket.emit("start_stream");
   }
 }

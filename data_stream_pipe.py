@@ -108,16 +108,17 @@ def consume(conn):
 def index():
     return render_template("index.html")
 
-@socketio.on("start_stream")
+@socketio.on("control_stream")
 def stream_data():
     streamer = DataStreamer()
-    consumer, producer = Pipe(False)
 
     producer_process = Process(target=streamer.produce, args=(producer,))
     consumer_process = Process(target=consume, args=(consumer,))
 
     producer_process.start()
     consumer_process.start()
+
+
 
 if __name__ == "__main__":
 
@@ -126,6 +127,7 @@ if __name__ == "__main__":
         r.ping()
     except ConnectionRefusedError:
         raise(Exception("Please start the redis server via $ redis-server command!"))
+    consumer, producer = Pipe(False)
     # socketio.run(app, use_reloader=True, debug=True, extra_files=['/templates/index.html'])
     ip = get_ip_address()
     socketio.run(app,
