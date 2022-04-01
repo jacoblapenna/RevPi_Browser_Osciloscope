@@ -97,13 +97,14 @@ class DataStreamer:
 def consume(conn):
     print("Consuming...")
     ed = ExtremaDetector()
-    consumer_socketio = SocketIO(message_queue="redis://")
+    consumer_socketio = SocketIO(message_queue="redis://", async_mode="eventlet")
     while True:
         buffer = conn.recv()
-        consumer_socketio.emit("data", {"buffer" : buffer})
-        for point in buffer:
-            if ed.check_value(point):
-                pass
+        if buffer:
+            consumer_socketio.emit("data", {"buffer" : buffer})
+            for point in buffer:
+                if ed.check_value(point):
+                    consumer_socketio.emit("extrema", {"point" : point})
 
 @app.route('/')
 def index():
