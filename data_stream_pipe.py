@@ -123,7 +123,7 @@ if __name__ == "__main__":
 
     # redis.Redis()
     # socketio.run(app, use_reloader=True, debug=True, extra_files=['/templates/index.html'])
-    ip = get_ip_address()
+    ip = get_ip_address(host='redis')
     socketio.run(app,
                  host=ip,
                  port=8080,
