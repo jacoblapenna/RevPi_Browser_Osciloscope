@@ -9,6 +9,7 @@ eventlet.monkey_patch(thread=False)
 
 import numpy as np
 from multiprocessing import Pipe, Process
+import multiprocessing as mp
 import random
 import time
 from collections import deque
@@ -109,7 +110,7 @@ def index():
     return render_template("index.html")
 
 @socketio.on("start_stream")
-def stream_data():
+def start_stream():
     streamer = DataStreamer()
 
     producer_process = Process(target=streamer.produce, args=(producer,))
@@ -118,7 +119,14 @@ def stream_data():
     producer_process.start()
     consumer_process.start()
 
-
+@socketio.on("stop_stream")
+def stop_stream():
+    producer.close()
+    consumer.close()
+    for p in mp.active_children():
+        if p.name == "producer_process" or p.name == "consumer_process":
+            p.close()
+            p.terminate()
 
 if __name__ == "__main__":
 
