@@ -5,7 +5,7 @@ var stream_running = false;
 var control_button = document.getElementById("start");
 
 control_button.addEventListener("click", ()=>{
-  console.log("Stream control requested...");
+  console.log(`Stream control requested with stream_running=${stream_running}...`);
   if (stream_running) {
     stream_running = false;
     // socket.emit("stop_stream");
