@@ -14,5 +14,7 @@ function start_stream() {
 
 // socket test
 socket.on("data", function(data) {
-  console.log(data.buffer);
+  for (let point in data.buffer) {
+      console.log(data.buffer);
+  }
 });
