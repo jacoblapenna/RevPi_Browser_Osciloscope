@@ -13,6 +13,6 @@ function start_stream() {
 }
 
 // socket test
-socket.on("socket_test", function(data) {
-  console.log(data.id);
+socket.on("data", function(data) {
+  console.log(data.buffer);
 });
