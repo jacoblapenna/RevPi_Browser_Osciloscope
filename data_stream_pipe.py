@@ -108,7 +108,7 @@ def consume(conn):
 def index():
     return render_template("index.html")
 
-@socketio.on("control_stream")
+@socketio.on("start_stream")
 def stream_data():
     streamer = DataStreamer()
 
