@@ -2,10 +2,9 @@
 // setup socket
 var socket =  io.connect(location.origin);
 var stream_running = false;
+var control_button = document.getElementById("start");
 
-document.getElementById("start").addEventListener("click", start_stream);
-
-function start_stream() {
+control_button.addEventListener("click", ()=>{
   console.log("Stream control requested...");
   if (stream_running) {
     stream_running = false;
@@ -14,7 +13,7 @@ function start_stream() {
     stream_running = true;
     socket.emit("start_stream");
   }
-}
+});
 
 // socket test
 socket.on("data", function(data) {
