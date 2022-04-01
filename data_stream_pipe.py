@@ -19,8 +19,8 @@ from flask import Flask, render_template
 from flask_socketio import SocketIO
 
 app = Flask(__name__)
-socketio = SocketIO(app, message_queue="redis://")
-# socketio = SocketIO(app)
+# socketio = SocketIO(app, message_queue="redis://")
+socketio = SocketIO(app)
 
 def get_ip_address():
     # get the server's IP on which to serve app
@@ -96,10 +96,10 @@ class DataStreamer:
 def consume(conn):
     print("Consuming...")
     ed = ExtremaDetector()
-    consumer_socketio = SocketIO(message_queue="redis://")
+    # consumer_socketio = SocketIO(message_queue="redis://")
     while True:
         buffer = conn.recv()
-        consumer_socketio.emit("data", {"buffer" : buffer})
+        # consumer_socketio.emit("data", {"buffer" : buffer})
         for point in buffer:
             if ed.check_value(point):
                 pass
