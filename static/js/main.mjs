@@ -4,7 +4,8 @@ var socket =  io.connect(location.origin);
 var stream_running = false;
 var control_button = document.getElementById("start");
 
-control_button.addEventListener("click", ()=>{
+control_button.addEventListener("click", stream_controller);
+function stream_controller() {
   console.log(`Stream control requested with stream_running=${stream_running}...`);
   if (stream_running) {
     stream_running = false;
@@ -13,7 +14,7 @@ control_button.addEventListener("click", ()=>{
     stream_running = true;
     // socket.emit("start_stream");
   }
-});
+}
 
 // socket test
 socket.on("data", function(data) {
