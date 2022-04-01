@@ -122,8 +122,9 @@ def start_stream():
 
 @socketio.on("stop_stream")
 def stop_stream():
-    producer.close()
+    print("Terminating processes...")
     consumer.close()
+    producer.close()
     for p in mp.active_children():
         if p.name == "producer_process" or p.name == "consumer_process":
             p.close()
