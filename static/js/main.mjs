@@ -8,10 +8,10 @@ control_button.addEventListener("click", ()=>{
   console.log("Stream control requested...");
   if (stream_running) {
     stream_running = false;
-    socket.emit("stop_stream");
+    // socket.emit("stop_stream");
   } else {
     stream_running = true;
-    socket.emit("start_stream");
+    // socket.emit("start_stream");
   }
 });
 
