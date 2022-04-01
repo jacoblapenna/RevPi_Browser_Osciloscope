@@ -20,8 +20,9 @@ socket.on("data", function(data) {
   for (let point in data.buffer) {
       // console.log(data.buffer);
   }
+});
 
 
 socket.on("extrema", function(data) {
   console.log(data.point);
-})
+});
