@@ -121,9 +121,9 @@ def stream_data():
 
 if __name__ == "__main__":
 
-    # redis.Redis()
+    redis.Redis()
     # socketio.run(app, use_reloader=True, debug=True, extra_files=['/templates/index.html'])
-    ip = get_ip_address(host='redis')
+    ip = get_ip_address()
     socketio.run(app,
                  host=ip,
                  port=8080,
