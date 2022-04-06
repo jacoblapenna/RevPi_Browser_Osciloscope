@@ -5,8 +5,6 @@ var stream_running = false;
 var control_button = document.getElementById("start");
 
 control_button.addEventListener("click", function(e) {
-  e.stopPropagation()
-  e.preventDefault();
   console.log(`Stream control requested...`);
   if (stream_running) {
     stream_running = false;
@@ -15,6 +13,7 @@ control_button.addEventListener("click", function(e) {
     stream_running = true;
     // socket.emit("start_stream");
   }
+  await new Promise(resolve => setTimeout(resolve, 1000));
 });
 
 // socket test
