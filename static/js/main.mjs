@@ -13,7 +13,7 @@ control_button.addEventListener("click", function(e) {
     stream_running = true;
     // socket.emit("start_stream");
   }
-  new Promise(resolve => setTimeout(resolve, 1000));
+  new Promise(resolve => setTimeout(resolve, 10000));
 });
 
 // socket test
