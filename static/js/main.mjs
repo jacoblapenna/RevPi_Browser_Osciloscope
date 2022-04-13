@@ -14,6 +14,7 @@ function add_stream_control_handler(element) {
 function control_stream(element) {
   if (stream_running) {
     stream_running = false;
+    console.log("Stopping stream...");
     socket.emit("stop_stream");
   } else {
     stream_running = true;
