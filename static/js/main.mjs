@@ -1,5 +1,4 @@
 
-// setup socket
 var socket =  io.connect(location.origin);
 var stream_running = false;
 var stream_control_button = document.getElementById("start");
@@ -22,6 +21,8 @@ function control_stream(element) {
   }
   add_stream_control_handler(element);
 }
+
+function push_to_data_buffer(point, extrema=false):
 
 socket.on("data", function(data) {
 

@@ -15,6 +15,7 @@ import time
 from collections import deque
 import redis
 import socket
+from collections import deque
 
 from flask import Flask, render_template
 from flask_socketio import SocketIO
@@ -64,13 +65,13 @@ class ExtremaDetector:
                 self._mn = val
                 self._look_for_maxima = False
                 # print(f"Local maxima detected at {(self._mx_t, self._mx)}")
-                return (self._mx_t, self._mx)
+                return True
         else:
             if val > self._mn + self._threshold:
                 self._mx = val
                 self._look_for_maxima = True
                 # print(f"Local minima detected at {(self._mn_t, self._mn)}")
-                return (self._mn_t, self._mn)
+                return True
 
         return None
 
@@ -80,33 +81,37 @@ class DataStreamer:
     """
     pull from AIO on revpi here when ready
     """
-    def __init__(self):
-        self._freq = 0.1
+    def __init__(self, max_buffer_len):
+        self._freq = 2.0
         self._dt = 0.001
         self._time = 0
-        self.consumer, self.producer = Pipe(False)
-        self.socket = SocketIO(message_queue="redis://", async_mode="eventlet")
+        self._max_len = max_buffer_len;
+        self._buffer = deque([], maxlen=self._max_len)
+        self._buffer_len = 0
+        self._consumer, self._producer = Pipe(False)
+        self._socket = SocketIO(message_queue="redis://", async_mode="eventlet")
 
     def produce(self):
         print("Producing...")
         while True:
-            buffer = []
-            for _ in range(random.randint(7, 30)):
-                buffer.append((self._time, np.sin(self._freq*2*np.pi*self._time)))
-                self._time += 0.001
-            self.producer.send(buffer)
+            point = (self._time, np.sin(self._freq*2*np.pi*self._time))
+            self._producer.send(point)
+            self._time += 0.001
 
     def consume(self):
         print("Consuming...")
-        ed = ExtremaDetector()
-        # consumer_socketio = SocketIO(message_queue="redis://", async_mode="eventlet")
+        detector = ExtremaDetector()
         while True:
-            buffer = self.consumer.recv()
-            if buffer:
-                # consumer_socketio.emit("data", {"buffer" : buffer})
-                for point in buffer:
-                    if ed.check_value(point):
-                        self.socket.emit("extrema", {"point" : point})
+            try:
+                point = self._consumer.recv()
+                self._buffer.append(point)
+                if self._buffer_len < self._max_len:
+                    self._buffer_len += 1
+                if detector.check_value(point):
+                    pass # emit current control event here
+                self.socket.emit("data", {"data" : self._buffer})
+            except EOFError:
+                self._consumer.close()
 
 @app.route('/')
 def index():
@@ -114,7 +119,7 @@ def index():
 
 @socketio.on("start_stream")
 def start_stream():
-    streamer = DataStreamer()
+    streamer = DataStreamer(10000)
 
     producer_process = Process(target=streamer.produce, name="producer_process")
     consumer_process = Process(target=streamer.consume, name="consumer_process")
