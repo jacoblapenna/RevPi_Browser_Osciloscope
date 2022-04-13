@@ -85,6 +85,11 @@ class DataStreamer:
         self._dt = 0.001
         self._time = 0
         self.consumer, self.producer = Pipe(False)
+        self.socket = SocketIO(message_queue="redis://", async_mode="eventlet")
+
+    @self.socket.on("stop_stream")
+    def stop_stream(self):
+        print("Class method to terminate stream.")
 
     def produce(self):
         print("Producing...")
@@ -98,14 +103,14 @@ class DataStreamer:
     def consume(self):
         print("Consuming...")
         ed = ExtremaDetector()
-        consumer_socketio = SocketIO(message_queue="redis://", async_mode="eventlet")
+        # consumer_socketio = SocketIO(message_queue="redis://", async_mode="eventlet")
         while True:
             buffer = self.consumer.recv()
             if buffer:
-                consumer_socketio.emit("data", {"buffer" : buffer})
+                # consumer_socketio.emit("data", {"buffer" : buffer})
                 for point in buffer:
                     if ed.check_value(point):
-                        consumer_socketio.emit("extrema", {"point" : point})
+                        self.socket.emit("extrema", {"point" : point})
 
 @app.route('/')
 def index():
@@ -121,15 +126,15 @@ def start_stream():
     producer_process.start()
     consumer_process.start()
 
-@socketio.on("stop_stream")
-def stop_stream():
-    print("Terminating processes...")
-    # consumer.close()
-    # producer.close()
-    # for p in mp.active_children():
-    #     if p.name == "producer_process" or p.name == "consumer_process":
-    #         p.close()
-    #         p.terminate()
+# @socketio.on("stop_stream")
+# def stop_stream():
+#     print("Terminating processes...")
+#     # consumer.close()
+#     # producer.close()
+#     # for p in mp.active_children():
+#     #     if p.name == "producer_process" or p.name == "consumer_process":
+#     #         p.close()
+#     #         p.terminate()
 
 if __name__ == "__main__":
 
