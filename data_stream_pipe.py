@@ -116,15 +116,15 @@ def index():
 def start_stream():
     streamer = DataStreamer()
 
-    producer_process = Process(target=streamer.produce)
-    consumer_process = Process(target=streamer.consume)
+    producer_process = Process(target=streamer.produce, name="producer_process")
+    consumer_process = Process(target=streamer.consume, name="consumer_process")
 
     producer_process.start()
     consumer_process.start()
 
 @socketio.on("stop_stream")
 def stop_stream():
-    print("Terminating processes...")
+    # print("Terminating processes...")
     # consumer.close()
     # producer.close()
     for p in mp.active_children():
