@@ -10,6 +10,7 @@ function add_stream_control_handler(element) {
       control_stream(this);
     }, {once: true});
 }
+// comment
 
 function control_stream(element) {
   if (stream_running) {
@@ -21,8 +22,6 @@ function control_stream(element) {
   }
   add_stream_control_handler(element);
 }
-
-function push_to_data_buffer(point, extrema=false):
 
 socket.on("data", function(data) {
 
