@@ -2,26 +2,33 @@
 // setup socket
 var socket =  io.connect(location.origin);
 var stream_running = false;
-var control_button = document.getElementById("start");
+var stream_control_button = document.getElementById("start");
 
-control_button.addEventListener("click", function(e) {
-  console.log(`Stream control requested...`);
+add_stream_control_handler(control_button);
+
+function add_stream_control_handler(element) {
+  element.addEventListener("click", function() {
+      control_stream(this);
+    }, {once: true});
+}
+
+function control_stream(element) {
   if (stream_running) {
     stream_running = false;
-    // socket.emit("stop_stream");
+    socket.emit("stop_stream");
   } else {
     stream_running = true;
-    // socket.emit("start_stream");
+    socket.emit("start_stream");
   }
-  new Promise(resolve => setTimeout(resolve, 10000));
-});
+  add_stream_control_handler(element);
+}
 
 // socket test
-socket.on("data", function(data) {
-  for (let point in data.buffer) {
-      // console.log(data.buffer);
-  }
-});
+// socket.on("data", function(data) {
+//   for (let point in data.buffer) {
+//       // console.log(data.buffer);
+//   }
+// });
 
 
 socket.on("extrema", function(data) {
