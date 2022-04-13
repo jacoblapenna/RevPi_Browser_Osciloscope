@@ -87,10 +87,6 @@ class DataStreamer:
         self.consumer, self.producer = Pipe(False)
         self.socket = SocketIO(message_queue="redis://", async_mode="eventlet")
 
-    @self.socket.on("stop_stream")
-    def stop_stream(self):
-        print("Class method to terminate stream.")
-
     def produce(self):
         print("Producing...")
         while True:
@@ -126,15 +122,16 @@ def start_stream():
     producer_process.start()
     consumer_process.start()
 
-# @socketio.on("stop_stream")
-# def stop_stream():
-#     print("Terminating processes...")
-#     # consumer.close()
-#     # producer.close()
-#     # for p in mp.active_children():
-#     #     if p.name == "producer_process" or p.name == "consumer_process":
-#     #         p.close()
-#     #         p.terminate()
+@socketio.on("stop_stream")
+def stop_stream():
+    print("Terminating processes...")
+    # consumer.close()
+    # producer.close()
+    for p in mp.active_children():
+        if p.name == "producer_process" or p.name == "consumer_process":
+            print(dir(p))
+            # p.close()
+            # p.terminate()
 
 if __name__ == "__main__":
 
