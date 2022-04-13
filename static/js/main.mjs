@@ -23,14 +23,11 @@ function control_stream(element) {
   add_stream_control_handler(element);
 }
 
-// socket test
-// socket.on("data", function(data) {
-//   for (let point in data.buffer) {
-//       // console.log(data.buffer);
-//   }
-// });
+socket.on("data", function(data) {
+
+});
 
 
 socket.on("extrema", function(data) {
-  console.log(data.point);
+  console.log(data);
 });
