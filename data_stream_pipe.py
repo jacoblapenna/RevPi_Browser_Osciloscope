@@ -84,27 +84,28 @@ class DataStreamer:
         self._freq = 0.1
         self._dt = 0.001
         self._time = 0
+        self.consumer, self.producer = Pipe(False)
 
-    def produce(self, conn):
+    def produce(self):
         print("Producing...")
         while True:
             buffer = []
             for _ in range(random.randint(7, 30)):
                 buffer.append((self._time, np.sin(self._freq*2*np.pi*self._time)))
                 self._time += 0.001
-            conn.send(buffer)
+            self.producer.send(buffer)
 
-def consume(conn):
-    print("Consuming...")
-    ed = ExtremaDetector()
-    consumer_socketio = SocketIO(message_queue="redis://", async_mode="eventlet")
-    while True:
-        buffer = conn.recv()
-        if buffer:
-            consumer_socketio.emit("data", {"buffer" : buffer})
-            for point in buffer:
-                if ed.check_value(point):
-                    consumer_socketio.emit("extrema", {"point" : point})
+    def consume(self):
+        print("Consuming...")
+        ed = ExtremaDetector()
+        consumer_socketio = SocketIO(message_queue="redis://", async_mode="eventlet")
+        while True:
+            buffer = conn.recv()
+            if buffer:
+                consumer_socketio.emit("data", {"buffer" : buffer})
+                for point in buffer:
+                    if ed.check_value(point):
+                        consumer_socketio.emit("extrema", {"point" : point})
 
 @app.route('/')
 def index():
@@ -114,8 +115,8 @@ def index():
 def start_stream():
     streamer = DataStreamer()
 
-    producer_process = Process(target=streamer.produce, args=(producer,))
-    consumer_process = Process(target=consume, args=(consumer,))
+    producer_process = Process(target=streamer.produce)
+    consumer_process = Process(target=streamer.consume)
 
     producer_process.start()
     consumer_process.start()
@@ -123,12 +124,12 @@ def start_stream():
 @socketio.on("stop_stream")
 def stop_stream():
     print("Terminating processes...")
-    consumer.close()
-    producer.close()
-    for p in mp.active_children():
-        if p.name == "producer_process" or p.name == "consumer_process":
-            p.close()
-            p.terminate()
+    # consumer.close()
+    # producer.close()
+    # for p in mp.active_children():
+    #     if p.name == "producer_process" or p.name == "consumer_process":
+    #         p.close()
+    #         p.terminate()
 
 if __name__ == "__main__":
 
@@ -137,7 +138,7 @@ if __name__ == "__main__":
         r.ping()
     except ConnectionRefusedError:
         raise(Exception("Please start the redis server via $ redis-server command!"))
-    consumer, producer = Pipe(False)
+
     # socketio.run(app, use_reloader=True, debug=True, extra_files=['/templates/index.html'])
     ip = get_ip_address()
     socketio.run(app,
