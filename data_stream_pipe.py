@@ -100,7 +100,7 @@ class DataStreamer:
         ed = ExtremaDetector()
         consumer_socketio = SocketIO(message_queue="redis://", async_mode="eventlet")
         while True:
-            buffer = conn.recv()
+            buffer = self.consumer.recv()
             if buffer:
                 consumer_socketio.emit("data", {"buffer" : buffer})
                 for point in buffer:
