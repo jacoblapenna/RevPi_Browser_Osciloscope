@@ -4,7 +4,7 @@ var socket =  io.connect(location.origin);
 var stream_running = false;
 var stream_control_button = document.getElementById("start");
 
-add_stream_control_handler(control_button);
+add_stream_control_handler(stream_control_button);
 
 function add_stream_control_handler(element) {
   element.addEventListener("click", function() {
