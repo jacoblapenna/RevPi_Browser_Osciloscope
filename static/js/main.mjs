@@ -10,7 +10,6 @@ function add_stream_control_handler(element) {
       control_stream(this);
     }, {once: true});
 }
-// comment
 
 function control_stream(element) {
   if (stream_running) {

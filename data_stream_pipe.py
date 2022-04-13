@@ -109,7 +109,7 @@ class DataStreamer:
                     self._buffer_len += 1
                 if detector.check_value(point):
                     pass # emit current control event here
-                self.socket.emit("data", {"data" : self._buffer})
+                self._socket.emit("data", {"data" : self._buffer})
             except EOFError:
                 self._consumer.close()
 
