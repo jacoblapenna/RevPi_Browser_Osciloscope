@@ -35,7 +35,6 @@ socket.on("new_data", function(data) {
 });
 
 function get_new_data() {
-  console.log(stream_running);
   socket.emit("get_new_data");
 }
 

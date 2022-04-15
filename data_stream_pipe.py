@@ -123,6 +123,7 @@ def index():
 def start_stream():
     producer_process = Process(target=data_streamer.produce, name="producer_process")
     producer_process.start()
+    socketio.emit("stream_started")
 
 @socketio.on("stop_stream")
 def stop_stream():
