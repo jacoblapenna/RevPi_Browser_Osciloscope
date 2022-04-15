@@ -116,13 +116,13 @@ class DataStreamer:
                 else:
                     raise Exception(f"Invalid instruction: consumer_instruction=={consumer_instruction}")
 
-    def consume(self, socket):
+    def consume(self, instruction):
         buffer = None
-        self._consumer.send("get_new_data")
+        self._consumer.send(instruction)
         if self._consumer.poll(1000):
             buffer = self._consumer.recv()
             if buffer:
-                socket.emit("new_data", {"data" : buffer})
+                socketio.emit("new_data", {"data" : buffer})
 
 @app.route('/')
 def index():
@@ -130,23 +130,20 @@ def index():
 
 @socketio.on("start_stream")
 def start_stream():
-    print(mp.active_children())
-    producer_process = Process(target=data_streamer.produce, name="producer_process")
-    producer_process.start()
+    if mp.active_children():
+        data_streamer.consume("start_stream")
+    else:
+        producer_process = Process(target=data_streamer.produce, name="producer_process")
+        producer_process.start()
     socketio.emit("stream_started")
-    print(mp.active_children())
 
 @socketio.on("stop_stream")
 def stop_stream():
-    for p in mp.active_children():
-        if p.name == "producer_process":
-            print(dir(p))
-            # p.close()
-            # p.terminate()
+    data_streamer.send("stop_stream")
 
 @socketio.on("get_new_data")
 def get_new_data():
-    data_streamer.consume(socketio)
+    data_streamer.consume("get_new_data")
 
 if __name__ == "__main__":
 
