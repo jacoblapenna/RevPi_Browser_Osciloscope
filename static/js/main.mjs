@@ -13,21 +13,31 @@ function add_stream_control_handler(element) {
 
 function control_stream(element) {
   if (stream_running) {
-    stream_running = false;
-    console.log("Stopping stream...");
     socket.emit("stop_stream");
   } else {
-    stream_running = true;
     socket.emit("start_stream");
   }
-  add_stream_control_handler(element);
+  add_stream_control_handler(element); // consider moving to stream_started and stream_stopped events to reset event listener
 }
 
-socket.on("data", function(data) {
-
+socket.on("stream_started", function() {
+  stream_running = true;
+  get_new_data();
 });
 
+socket.on("stream_stopped", function() {
+  stream_running = false;
+});
 
-socket.on("extrema", function(data) {
+socket.on("new_data", function(data) {
   console.log(data);
+  get_new_data();
 });
+
+function get_new_data() {
+  socket.emit("get_new_data");
+}
+
+// socket.on("extrema", function(data) {
+//   console.log(data);
+// });

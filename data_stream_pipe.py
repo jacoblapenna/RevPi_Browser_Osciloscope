@@ -4,8 +4,6 @@ Created on Tue Mar 29 09:16:40 2022
 
 @author: jlapenna
 """
-import eventlet
-eventlet.monkey_patch(thread=False)
 
 import numpy as np
 from multiprocessing import Pipe, Process
@@ -13,7 +11,6 @@ import multiprocessing as mp
 import random
 import time
 from collections import deque
-import redis
 import socket
 from collections import deque
 
@@ -21,7 +18,7 @@ from flask import Flask, render_template
 from flask_socketio import SocketIO
 
 app = Flask(__name__)
-socketio = SocketIO(app, message_queue="redis://", async_mode="eventlet")
+socketio = SocketIO(app)
 # socketio = SocketIO(app)
 
 def get_ip_address():
@@ -81,37 +78,42 @@ class DataStreamer:
     """
     pull from AIO on revpi here when ready
     """
-    def __init__(self, max_buffer_len):
+    def __init__(self):
         self._freq = 2.0
         self._dt = 0.001
         self._time = 0
-        self._max_len = max_buffer_len;
-        self._buffer = deque([], maxlen=self._max_len)
-        self._buffer_len = 0
-        self._consumer, self._producer = Pipe(False)
-        self._socket = SocketIO(message_queue="redis://", async_mode="eventlet")
+        self._consumer, self._producer = Pipe()
+        self._extrema_detector = ExtremaDetector()
+        self._stop_stream = False
 
     def produce(self):
-        print("Producing...")
+        """
+        This method is ran in another process, and, to be thread safe, all
+        class attributes used here cannot be used in any other method other
+        than __init__.
+        """
+        buffer = []
         while True:
-            point = (self._time, np.sin(self._freq*2*np.pi*self._time))
-            self._producer.send(point)
+            buffer.append(self._time, np.sin(self._freq*2*np.pi*self._time))
             self._time += 0.001
+            if self._producer.poll():
+                consumer_instruction = self._producer.recv()
+                if consumer_instruction == "get_new_data":
+                    self._producer.send(buffer)
+                    buffer = []
+                elif consumer_instruction == "stop_producer":
+                    break
+                else:
+                    raise Exception(f"Invalid instruction: consumer_instruction=={consumer_instruction}")
+        # close this connection here so process can be stopped
 
-    def consume(self):
-        print("Consuming...")
-        detector = ExtremaDetector()
-        while True:
-            try:
-                point = self._consumer.recv()
-                self._buffer.append(point)
-                if self._buffer_len < self._max_len:
-                    self._buffer_len += 1
-                if detector.check_value(point):
-                    pass # emit current control event here
-                self._socket.emit("data", {"data" : list(self._buffer)})
-            except EOFError:
-                self._consumer.close()
+    def consume(self, socket):
+        buffer = None
+        self._consumer.send("get_new_data")
+        if self._consumer.poll(1000):
+            buffer = self._consumer.recv()
+            if buffer:
+                socket.emit("new_data", {"data" : buffer})
 
 @app.route('/')
 def index():
@@ -119,34 +121,25 @@ def index():
 
 @socketio.on("start_stream")
 def start_stream():
-    streamer = DataStreamer(10000)
-
-    producer_process = Process(target=streamer.produce, name="producer_process")
-    consumer_process = Process(target=streamer.consume, name="consumer_process")
-
+    producer_process = Process(target=data_streamer.produce, name="producer_process")
     producer_process.start()
-    consumer_process.start()
 
 @socketio.on("stop_stream")
 def stop_stream():
-    # print("Terminating processes...")
-    # consumer.close()
-    # producer.close()
     for p in mp.active_children():
-        if p.name == "producer_process" or p.name == "consumer_process":
+        if p.name == "producer_process":
             print(dir(p))
             # p.close()
             # p.terminate()
 
+@socketio.on("get_new_data")
+def get_and_send_new_data():
+    data_streamer.consume(socketio)
+
 if __name__ == "__main__":
 
-    r = redis.Redis()
-    try:
-        r.ping()
-    except ConnectionRefusedError:
-        raise(Exception("Please start the redis server via $ redis-server command!"))
+    data_streamer = DataStreamer()
 
-    # socketio.run(app, use_reloader=True, debug=True, extra_files=['/templates/index.html'])
     ip = get_ip_address()
     socketio.run(app,
                  host=ip,
