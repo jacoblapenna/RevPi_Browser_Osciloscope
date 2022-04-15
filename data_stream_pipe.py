@@ -61,13 +61,11 @@ class ExtremaDetector:
             if val < self._mx - self._threshold:
                 self._mn = val
                 self._look_for_maxima = False
-                # print(f"Local maxima detected at {(self._mx_t, self._mx)}")
                 return True
         else:
             if val > self._mn + self._threshold:
                 self._mx = val
                 self._look_for_maxima = True
-                # print(f"Local minima detected at {(self._mn_t, self._mn)}")
                 return True
 
         return None
@@ -120,6 +118,7 @@ class DataStreamer:
 
     def consume(self, instruction):
         buffer = None
+        print(f"Consumer sending {instruction}")
         self._consumer.send(instruction)
         if self._consumer.poll(1000):
             buffer = self._consumer.recv()
@@ -135,18 +134,15 @@ def start_stream():
     if not mp.active_children():
         producer_process = Process(target=data_streamer.produce, name="producer_process")
         producer_process.start()
-    print("Start stream event detected.", mp.active_children())
     data_streamer.consume("start_stream")
     socketio.emit("stream_started")
 
 @socketio.on("stop_stream")
 def stop_stream():
-    print("Stop stream event detected.")
     data_streamer.consume("stop_stream")
 
 @socketio.on("get_new_data")
 def get_new_data():
-    print("Data request event detected.")
     data_streamer.consume("get_new_data")
 
 if __name__ == "__main__":
