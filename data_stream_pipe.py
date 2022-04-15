@@ -122,10 +122,9 @@ class DataStreamer:
         self._consumer.send(instruction)
         print(f"sent {instruction}")
         if self._consumer.poll(1):
-            print("true")
-            # buffer = self._consumer.recv()
-            # if buffer:
-            #     socket.emit("new_data", {"data" : buffer})
+            buffer = self._consumer.recv()
+            if buffer:
+                socket.emit("new_data", {"data" : buffer})
         print("false")
 
 @app.route('/')
