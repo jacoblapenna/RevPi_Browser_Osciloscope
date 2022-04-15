@@ -94,6 +94,10 @@ class DataStreamer:
 
         This process is always running and whether data is streamed or not is
         determined via duplex communication through the pipe.
+
+        Eventually, an instruction will need to  be added to stop and restart
+        the pipe and process. This should be done whenever control is taken
+        and given up.
         """
         stream_data = False
         buffer = []
@@ -105,16 +109,14 @@ class DataStreamer:
                 instruction = self._producer.recv()
                 if instruction == "start_stream":
                     stream_data = True
-                    buffer = []
                 elif instruction == "stop_stream":
                     stream_data = False
                     self._producer.send(buffer)
-                    buffer = []
                 elif instruction == "get_new_data":
                     self._producer.send(buffer)
-                    buffer = []
                 else:
                     raise Exception(f"Invalid instruction: consumer_instruction=={consumer_instruction}")
+                buffer = []
 
     def consume(self, instruction):
         buffer = None
@@ -130,16 +132,15 @@ def index():
 
 @socketio.on("start_stream")
 def start_stream():
-    if mp.active_children():
-        data_streamer.consume("start_stream")
-    else:
+    if not mp.active_children():
         producer_process = Process(target=data_streamer.produce, name="producer_process")
         producer_process.start()
+    data_streamer.consume("start_stream")
     socketio.emit("stream_started")
 
 @socketio.on("stop_stream")
 def stop_stream():
-    data_streamer.send("stop_stream")
+    data_streamer.consume("stop_stream")
 
 @socketio.on("get_new_data")
 def get_new_data():
