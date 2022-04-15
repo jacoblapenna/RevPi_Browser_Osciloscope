@@ -120,10 +120,11 @@ class DataStreamer:
     def consume(self, instruction, socket):
         buffer = None
         self._consumer.send(instruction)
-        # if self._consumer.poll():
-        #     buffer = self._consumer.recv()
-        #     if buffer:
-        #         socket.emit("new_data", {"data" : buffer})
+        if instruction == "get_new_data" or instruction == "stop_stream":
+            if self._consumer.poll():
+                buffer = self._consumer.recv()
+                if buffer:
+                    socket.emit("new_data", {"data" : buffer})
 
 @app.route('/')
 def index():
