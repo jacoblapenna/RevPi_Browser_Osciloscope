@@ -132,10 +132,10 @@ def index():
 
 @socketio.on("start_stream")
 def start_stream():
-    print("Start stream event detected.")
     if not mp.active_children():
         producer_process = Process(target=data_streamer.produce, name="producer_process")
         producer_process.start()
+    print("Start stream event detected.", mp.active_children())
     data_streamer.consume("start_stream")
     socketio.emit("stream_started")
 
