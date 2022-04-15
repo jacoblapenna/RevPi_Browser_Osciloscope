@@ -105,17 +105,17 @@ class DataStreamer:
                 self._time += 0.001
             if self._producer.poll():
                 instruction = self._producer.recv()
-                print(f"Producer revieved {instruction}")
                 if instruction == "start_stream":
                     stream_data = True
                 elif instruction == "stop_stream":
                     stream_data = False
                     self._producer.send(buffer)
+                    buffer = []
                 elif instruction == "get_new_data":
                     self._producer.send(buffer)
+                    buffer = []
                 else:
                     raise Exception(f"Invalid instruction: consumer_instruction=={consumer_instruction}")
-                buffer = []
 
     def consume(self, instruction):
         buffer = None
