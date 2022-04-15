@@ -115,17 +115,28 @@ class DataStreamer:
                     self._producer.send(buffer)
                     buffer = []
                 else:
-                    raise Exception(f"Invalid instruction: consumer_instruction=={consumer_instruction}")
+                    raise Exception(f"Invalid instruction at producer: instruction=={instruction}")
 
-    def consume(self, instruction, socket):
+    def control_stream(self, instruction, socket):
+        if instruction == "start_stream":
+            self._consumer.send(instruction)
+            socket.emit("stream_started")
+        elif instruction == "stop_stream":
+            self._consumer.send(instruction)
+            self._consume(1, socket)
+            socket.emit("stream_stopped")
+        elif instruction == "get_new_data":
+            self._consumer.send(instruction)
+            self._consume(1, socket)
+        else:
+            raise Exception(f"Invalid instruction at consumer: instruction=={instruction}")
+
+    def _consume(self, timeout, socket):
         buffer = None
-        self._consumer.send(instruction)
-        print(f"sent {instruction}")
-        if self._consumer.poll(1):
+        if self._consumer.poll(timeout):
             buffer = self._consumer.recv()
             if buffer:
                 socket.emit("new_data", {"data" : buffer})
-        print("false")
 
 @app.route('/')
 def index():
@@ -137,7 +148,6 @@ def start_stream():
         producer_process = Process(target=data_streamer.produce, name="producer_process")
         producer_process.start()
     data_streamer.consume("start_stream", socketio)
-    socketio.emit("stream_started")
 
 @socketio.on("stop_stream")
 def stop_stream():

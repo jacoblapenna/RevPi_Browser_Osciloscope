@@ -21,7 +21,6 @@ function control_stream(element) {
 }
 
 socket.on("stream_started", function() {
-  console.log("stream started...");
   stream_running = true;
   get_new_data();
 });
