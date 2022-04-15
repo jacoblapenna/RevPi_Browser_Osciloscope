@@ -136,6 +136,7 @@ def start_stream():
         producer_process.start()
     data_streamer.consume("start_stream", socketio)
     socketio.emit("stream_started")
+    print("Emitted 'stream_started'")
 
 @socketio.on("stop_stream")
 def stop_stream():
