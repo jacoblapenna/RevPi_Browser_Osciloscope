@@ -132,7 +132,7 @@ def index():
 
 @socketio.on("start_stream")
 def start_stream():
-    print(mo.active_children())
+    print("Start stream event detected.")
     if not mp.active_children():
         producer_process = Process(target=data_streamer.produce, name="producer_process")
         producer_process.start()
@@ -141,10 +141,12 @@ def start_stream():
 
 @socketio.on("stop_stream")
 def stop_stream():
+    print("Stop stream event detected.")
     data_streamer.consume("stop_stream")
 
 @socketio.on("get_new_data")
 def get_new_data():
+    print("Data request event detected.")
     data_streamer.consume("get_new_data")
 
 if __name__ == "__main__":
