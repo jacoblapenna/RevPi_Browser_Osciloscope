@@ -91,21 +91,30 @@ class DataStreamer:
         This method is ran in another process, and, to be thread safe, all
         class attributes used here cannot be used in any other method other
         than __init__.
+
+        This process is always running and whether data is streamed or not is
+        determined via duplex communication through the pipe.
         """
+        stream_data = False
         buffer = []
         while True:
-            buffer.append([self._time, np.sin(self._freq*2*np.pi*self._time)])
-            self._time += 0.001
+            if stream_data:
+                buffer.append([self._time, np.sin(self._freq*2*np.pi*self._time)])
+                self._time += 0.001
             if self._producer.poll():
-                consumer_instruction = self._producer.recv()
-                if consumer_instruction == "get_new_data":
+                instruction = self._producer.recv()
+                if instruction == "start_stream":
+                    stream_data = True
+                    buffer = []
+                elif instruction == "stop_stream":
+                    stream_data = False
                     self._producer.send(buffer)
                     buffer = []
-                elif consumer_instruction == "stop_producer":
-                    break
+                elif instruction == "get_new_data":
+                    self._producer.send(buffer)
+                    buffer = []
                 else:
                     raise Exception(f"Invalid instruction: consumer_instruction=={consumer_instruction}")
-        # close this connection here so process can be stopped
 
     def consume(self, socket):
         buffer = None
@@ -121,9 +130,11 @@ def index():
 
 @socketio.on("start_stream")
 def start_stream():
+    print(mp.active_children())
     producer_process = Process(target=data_streamer.produce, name="producer_process")
     producer_process.start()
     socketio.emit("stream_started")
+    print(mp.active_children())
 
 @socketio.on("stop_stream")
 def stop_stream():
@@ -134,7 +145,7 @@ def stop_stream():
             # p.terminate()
 
 @socketio.on("get_new_data")
-def get_and_send_new_data():
+def get_new_data():
     data_streamer.consume(socketio)
 
 if __name__ == "__main__":
