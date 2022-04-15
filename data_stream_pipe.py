@@ -120,7 +120,7 @@ class DataStreamer:
     def consume(self, instruction, socket):
         buffer = None
         self._consumer.send(instruction)
-        if self._consumer.poll(1000):
+        if self._consumer.poll():
             buffer = self._consumer.recv()
             if buffer:
                 socket.emit("new_data", {"data" : buffer})
@@ -134,7 +134,7 @@ def start_stream():
     if not mp.active_children():
         producer_process = Process(target=data_streamer.produce, name="producer_process")
         producer_process.start()
-    data_streamer.consume("start_stream", socketio)
+    data_streamer.consume("start_stream", socketio) # hangs here????????
     print("Sent instruction to producer")
     socketio.emit("stream_started")
 
