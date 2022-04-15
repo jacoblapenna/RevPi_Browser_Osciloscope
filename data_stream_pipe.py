@@ -147,15 +147,15 @@ def start_stream():
     if not mp.active_children():
         producer_process = Process(target=data_streamer.produce, name="producer_process")
         producer_process.start()
-    data_streamer.consume("start_stream", socketio)
+    data_streamer.control_stream("start_stream", socketio)
 
 @socketio.on("stop_stream")
 def stop_stream():
-    data_streamer.consume("stop_stream", socketio)
+    data_streamer.control_stream("stop_stream", socketio)
 
 @socketio.on("get_new_data")
 def get_new_data():
-    data_streamer.consume("get_new_data", socketio)
+    data_streamer.control_stream("get_new_data", socketio)
 
 if __name__ == "__main__":
 
