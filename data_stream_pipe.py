@@ -120,11 +120,13 @@ class DataStreamer:
     def consume(self, instruction, socket):
         buffer = None
         self._consumer.send(instruction)
+        print(f"sent {instruction}")
         if self._consumer.poll():
             print("true")
             # buffer = self._consumer.recv()
             # if buffer:
             #     socket.emit("new_data", {"data" : buffer})
+        print("false")
 
 @app.route('/')
 def index():
@@ -144,7 +146,6 @@ def stop_stream():
 
 @socketio.on("get_new_data")
 def get_new_data():
-    print("get_new_data event")
     data_streamer.consume("get_new_data", socketio)
 
 if __name__ == "__main__":
