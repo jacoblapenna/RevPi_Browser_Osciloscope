@@ -106,9 +106,18 @@ Deque.prototype.plot = function(canvas) {
     while (present_node) {
       ctx.lineTo(t * dt, (h/2) - vpd*present_node.val);
       if (this.extrema_detector.check_value(present_node.val)) {
+        ctx.stroke();
+        ctx.closePath();
+        ctx.strokeStyle = "rgb(124, 124, 124)";
+        ctx.beginPath();
         ctx.arc(t * dt, (h/2) - vpd*present_node.val, 10, 0, 2 * Math.PI);
-        ctx.fillStyle = 'red';
+        ctx.fillStyle = "rgb(124, 124, 124)";
         ctx.fill();
+        ctx.stroke();
+        ctx.closePath();
+        ctx.strokeStyle = "rgb(25, 255, 25)";
+        ctx.beginPath();
+        ctx.moveTo(t * dt, (h/2) - vpd*present_node.val);
       }
       t++;
       present_node = present_node.next;
