@@ -67,19 +67,28 @@ Deque.prototype.plot = function(canvas) {
   const h = canvas.height;
   const ctx = canvas.getContext("2d");
   ctx.clearRect(0, 0, w, h);
+  //Draw x-axis
+	ctx.strokeStyle = "rgb(124, 124, 124)";
+	ctx.beginPath();
+	ctx.moveTo(0, h/2);
+	ctx.lineTo(w, h/2);
+	ctx.stroke();
+	ctx.closePath();
   //Draw vertical gridlines
-  ctx.beginPath();
-  ctx.setLineDash([2]);
-  ctx.strokeStyle = "rgb(124, 124, 124)";
-  for (var i = 1; i < 9; i++) {
-    ctx.moveTo(i * w/9, 0);
-    ctx.lineTo(i * w/9, h);
-  }
+	ctx.beginPath();
+	ctx.setLineDash([2]);
+	ctx.strokeStyle = "rgb(124, 124, 124)";
+	for (var i = 1; i < 5; i++) {
+		ctx.moveTo(i * w/5, 0);
+		ctx.lineTo(i * w/5, h);
+	}
   //Draw horizontal gridlines
-  for (var i = 1; i < 10; i++) {
-    ctx.moveTo(0, i * h/10);
-    ctx.lineTo(w, i * h/10);
-  }
+	for (var i = 1; i < 6; i++) {
+		if (i != 3) {
+			ctx.moveTo(0, i * h/6);
+			ctx.lineTo(w, i * h/6);
+		}
+	}
   ctx.stroke();
   ctx.closePath();
   if (this.length) {
