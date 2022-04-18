@@ -1,6 +1,6 @@
 "use strict";
 
-function Deque(max_len) {
+export function Deque(max_len) {
   this.max_len = max_len;
   this.length = 0;
   this.first = null;
