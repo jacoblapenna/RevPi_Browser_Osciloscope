@@ -1,3 +1,4 @@
+import { Deque } from "./Deque.mjs";
 
 const socket =  io.connect(location.origin);
 const stream_control_button = document.getElementById("start");
@@ -5,7 +6,7 @@ const canvas = document.getElementById("plot");
 const max_len = 10000;
 
 var stream_running = false;
-// var deque = new Deque(max_len);
+var deque = new Deque(max_len);
 
 add_stream_control_handler(stream_control_button);
 
