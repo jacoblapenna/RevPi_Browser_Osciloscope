@@ -1,10 +1,13 @@
 "use strict";
 
+import { ExtremaDetector } from "./ExtremaDetector.mjs";
+
 export function Deque(max_len) {
   this.max_len = max_len;
   this.length = 0;
   this.first = null;
   this.last = null;
+  this.extrema_detector = ExtremaDetector();
 }
 
 Deque.prototype.Node = function(val, next, prev) {
@@ -102,6 +105,11 @@ Deque.prototype.plot = function(canvas) {
     ctx.moveTo(0, (h/2) - vpd*present_node.val);
     while (present_node) {
       ctx.lineTo(t * dt, (h/2) - vpd*present_node.val);
+      if (this.extrema_detector.check_value(present_node.val)) {
+        ctx.arc(t * dt, (h/2) - vpd*present_node.val, 10, 0, 2 * Math.PI);
+        ctx.fillStyle = 'red';
+        ctx.fill();
+      }
       t++;
       present_node = present_node.next;
     }
