@@ -1,7 +1,11 @@
 
-var socket =  io.connect(location.origin);
+const socket =  io.connect(location.origin);
+const stream_control_button = document.getElementById("start");
+const canvas = document.getElementById("plot");
+const max_len = 10000;
+
 var stream_running = false;
-var stream_control_button = document.getElementById("start");
+// var deque = new Deque(max_len);
 
 add_stream_control_handler(stream_control_button);
 
@@ -22,12 +26,13 @@ function control_stream(element) {
 
 socket.on("stream_started", function() {
   stream_running = true;
+  stream_control_button.innerHTML = "Stop";
   get_new_data();
 });
 
 socket.on("stream_stopped", function() {
-  console.log("stream stopped...");
   stream_running = false;
+  stream_control_button.innerHTML = "Start";
 });
 
 socket.on("new_data", function(data) {
