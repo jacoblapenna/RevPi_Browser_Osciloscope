@@ -92,15 +92,16 @@ Deque.prototype.plot = function(canvas) {
   ctx.stroke();
   ctx.closePath();
   if (this.length) {
+    const dt = w/this.max_len;
+    var t = 0;
     var present_node = this.first;
-    var x = 0;
     ctx.setLineDash([]);
-    ctx.strokeStyle = "rgb(255, 51, 51)";
+    ctx.strokeStyle = "rgb(25, 255, 25)";
     ctx.beginPath();
-    ctx.moveTo(x, h - present_node.val * (h/10));
+    ctx.moveTo(0, (h/2) - present_node.val);
     while (present_node) {
-      ctx.lineTo(x * w/9, h - present_node.val * (h/10));
-      x++;
+      ctx.lineTo(t * dt, (h/2) - present_node.val);
+      t++;
       present_node = present_node.next;
     }
     ctx.stroke();
