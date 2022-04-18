@@ -8,6 +8,7 @@ const max_len = 10000;
 var stream_running = false;
 var deque = new Deque(max_len);
 
+deque.draw();
 add_stream_control_handler(stream_control_button);
 
 function add_stream_control_handler(element) {
@@ -40,6 +41,7 @@ socket.on("new_data", function(data) {
   data.data.forEach( function (value) {
     deque.push(value)
   });
+  // deque.draw();
   get_new_data();
 });
 
