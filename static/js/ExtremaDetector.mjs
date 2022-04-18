@@ -19,11 +19,13 @@ ExtremaDetector.prototype.check_value = function(val) {
       this.mn = val;
       this.look_for_maxima = false;
       return true;
+    }
   } else {
     if (val > this.mn + this.threshold) {
       this.mx = val;
       this.look_for_maxima = true;
       return true;
+    }
   }
   return false;
 };
