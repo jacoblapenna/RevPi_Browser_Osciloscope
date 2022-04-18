@@ -1,4 +1,3 @@
-"use strict";
 
 export function ExtremaDetector(threshold) {
   this.threshold = threshold;

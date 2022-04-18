@@ -1,5 +1,3 @@
-"use strict";
-
 import { ExtremaDetector } from "./ExtremaDetector.mjs";
 
 export function Deque(max_len) {
