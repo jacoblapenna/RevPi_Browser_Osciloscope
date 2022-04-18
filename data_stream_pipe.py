@@ -21,10 +21,10 @@ app = Flask(__name__)
 socketio = SocketIO(app)
 # socketio = SocketIO(app)
 
+
 def get_ip_address():
     # get the server's IP on which to serve app
     # client can navigate to IP
-
     ip_address = '127.0.0.1'  # Default to localhost
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM) # setup a socket object
     try:
@@ -34,21 +34,16 @@ def get_ip_address():
 	    s.close()
     return ip_address
 
-class ExtremaDetector:
 
+class ExtremaDetector:
     def __init__(self):
         self._mn, self._mx = float("inf"), -float("inf")
         self._mn_t, self._mx_t = 0, 0
-        self._abs_mx = -float("inf")
         self._threshold = 0.01
         self._SNR = 100
         self._look_for_maxima = True
 
-    def check_value(self, point):
-
-        val = point[1]
-        time = point[0]
-
+    def check_value(self, val):
         if val < self._mn:
             self._mn = val
             self._mn_t = time
@@ -72,7 +67,6 @@ class ExtremaDetector:
 
 
 class DataStreamer:
-
     """
     pull from AIO on revpi here when ready
     """
@@ -138,9 +132,11 @@ class DataStreamer:
             if buffer:
                 socket.emit("new_data", {"data" : buffer})
 
+
 @app.route('/')
 def index():
     return render_template("index.html")
+
 
 @socketio.on("start_stream")
 def start_stream():
@@ -149,18 +145,19 @@ def start_stream():
         producer_process.start()
     data_streamer.control_stream("start_stream", socketio)
 
+
 @socketio.on("stop_stream")
 def stop_stream():
     data_streamer.control_stream("stop_stream", socketio)
+
 
 @socketio.on("get_new_data")
 def get_new_data():
     data_streamer.control_stream("get_new_data", socketio)
 
+
 if __name__ == "__main__":
-
     data_streamer = DataStreamer()
-
     ip = get_ip_address()
     socketio.run(app,
                  host=ip,

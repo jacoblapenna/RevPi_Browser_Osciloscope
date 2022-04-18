@@ -1,4 +1,5 @@
 import { Deque } from "./Deque.mjs";
+import { ExtremaDetector } from "./ExtremaDetector.mjs";
 
 const socket =  io.connect(location.origin);
 const stream_control_button = document.getElementById("start");
