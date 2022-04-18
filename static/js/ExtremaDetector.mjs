@@ -9,7 +9,7 @@ export function ExtremaDetector(threshold) {
 
 ExtremaDetector.prototype.check_value = function(val) {
   if (val < this.mn) {
-    self._mn = val;
+    this.mn = val;
   }
   if (val > this.mx) {
     this.mx = val;
