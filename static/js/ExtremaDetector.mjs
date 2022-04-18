@@ -1,9 +1,9 @@
 "use strict";
 
-export function ExtremaDetector() {
+export function ExtremaDetector(threshold) {
+  this.threshold = threshold;
   this.mn = Infinity;
   this.mx = -Infinity;
-  this.threshold = 0.01;
   this.look_for_maxima = true;
 }
 

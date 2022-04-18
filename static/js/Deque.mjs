@@ -7,7 +7,7 @@ export function Deque(max_len) {
   this.length = 0;
   this.first = null;
   this.last = null;
-  this.extrema_detector = ExtremaDetector();
+  this.extrema_detector = ExtremaDetector(0.01);
 }
 
 Deque.prototype.Node = function(val, next, prev) {
