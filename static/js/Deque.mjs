@@ -105,7 +105,7 @@ Deque.prototype.plot = function(canvas) {
     ctx.moveTo(0, (h/2) - vpd*present_node.val);
     while (present_node) {
       ctx.lineTo(t * dt, (h/2) - vpd*present_node.val);
-      if (t && this.extrema_detector.check_value(present_node.val)) {
+      if (t > 30 && this.extrema_detector.check_value(present_node.val)) {
         ctx.stroke();
         ctx.closePath();
         ctx.strokeStyle = "rgb(255, 51, 51)";
