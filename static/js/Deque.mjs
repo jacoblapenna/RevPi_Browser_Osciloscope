@@ -1,11 +1,13 @@
 "use strict;"
 
+import { ExtremaDetector } from "./ExtremaDetector.mjs";
+
 export function Deque(max_len) {
   this.max_len = max_len;
   this.length = 0;
   this.first = null;
   this.last = null;
-  // this.extrema_detector = ExtremaDetector(0.01);
+  this.extrema_detector = new ExtremaDetector(0.01);
 }
 
 Deque.prototype.Node = function(val, next, prev) {
