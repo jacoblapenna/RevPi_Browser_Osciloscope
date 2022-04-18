@@ -7,7 +7,7 @@ const canvas = document.getElementById("plot");
 const max_len = 5000;
 
 var stream_running = false;
-var extrema_detector = ExtremaDetector();
+// var extrema_detector = ExtremaDetector();
 var deque = new Deque(max_len);
 
 deque.plot(canvas);
