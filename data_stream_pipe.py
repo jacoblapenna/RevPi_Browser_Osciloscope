@@ -101,7 +101,7 @@ class DataStreamer:
         buffer = []
         while True:
             if stream_data:
-                buffer.append([self._time, np.sin(self._freq*2*np.pi*self._time)])
+                buffer.append(np.sin(self._freq*2*np.pi*self._time))
                 self._time += 0.001
             if self._producer.poll():
                 instruction = self._producer.recv()
