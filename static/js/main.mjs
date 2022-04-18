@@ -1,4 +1,5 @@
 import { Deque } from "./Deque.mjs";
+import { ExtremaDetector } from "./ExtremaDetector.mjs";
 
 const socket =  io.connect(location.origin);
 const stream_control_button = document.getElementById("start");
@@ -6,6 +7,7 @@ const canvas = document.getElementById("plot");
 const max_len = 5000;
 
 var stream_running = false;
+var extrema_detector = ExtremaDetector();
 var deque = new Deque(max_len);
 
 deque.plot(canvas);

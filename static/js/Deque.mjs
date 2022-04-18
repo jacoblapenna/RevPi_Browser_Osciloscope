@@ -1,4 +1,4 @@
-import { ExtremaDetector } from "./ExtremaDetector.mjs";
+"use strict;"
 
 export function Deque(max_len) {
   this.max_len = max_len;
