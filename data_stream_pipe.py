@@ -77,7 +77,8 @@ class DataStreamer:
         # self._time = 0
         self._consumer, self._producer = Pipe()
         self._extrema_detector = ExtremaDetector()
-        self._stop_stream = False
+        self._stream_data = False
+        self._buffer = []
 
     def produce(self):
         """
@@ -93,27 +94,25 @@ class DataStreamer:
         and given up.
         """
         DAQ = revpimodio2.RevPiModIO(autorefresh=True)
-        stream_data = False
-        buffer = []
 
-        def cycle(ct):
-            if stream_data:
-                buffer.append(DAQ.io.InputValue_1.value)
+        def cycle_handler(self, ct):
+            if self._stream_data:
+                self._buffer.append(DAQ.io.InputValue_1.value)
             if self._producer.poll():
                 instruction = self._producer.recv()
                 if instruction == "start_stream":
-                    stream_data = True
+                    self._stream_data = True
                 elif instruction == "stop_stream":
-                    stream_data = False
-                    self._producer.send(buffer)
-                    buffer = []
+                    self._stream_data = False
+                    self._producer.send(self._buffer)
+                    self._buffer = []
                 elif instruction == "get_new_data":
-                    self._producer.send(buffer)
-                    buffer = []
+                    self._producer.send(self._buffer)
+                    self._buffer = []
                 else:
                     raise Exception(f"Invalid instruction at producer: instruction=={instruction}")
 
-        DAQ.cycleloop(cycle, cycletime=25)
+        DAQ.cycleloop(cycle_handler, cycletime=25)
 
         # while True:
         #     if stream_data:
