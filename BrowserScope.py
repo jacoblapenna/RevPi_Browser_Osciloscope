@@ -116,7 +116,7 @@ class DataStreamer:
 
         daq = DAQ(self._producer)
 
-        daq.DAQ.cycleloop(daq.cycle_handler, cycletime=10)
+        daq.DAQ.cycleloop(daq.cycle_handler, cycletime=25)
 
     def control_stream(self, instruction, socket):
         if instruction == "start_stream":

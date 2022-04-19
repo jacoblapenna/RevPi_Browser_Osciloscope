@@ -3,7 +3,7 @@ import { Deque } from "./Deque.mjs";
 const socket =  io.connect(location.origin);
 const stream_control_button = document.getElementById("start");
 const canvas = document.getElementById("plot");
-const max_len = 500;
+const max_len = 200; // should be 5000/cycletime (ms)
 
 var stream_running = false;
 var deque = new Deque(max_len);
