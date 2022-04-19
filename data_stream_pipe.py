@@ -79,10 +79,11 @@ class DataStreamer:
         self._extrema_detector = ExtremaDetector()
         self._stream_data = False
         self._buffer = []
+        self._DAQ = revpimodio2.RevPiModIO(autorefresh=True)
 
     def _cycle_handler(self, ct):
         if self._stream_data:
-            self._buffer.append(DAQ.io.InputValue_1.value)
+            self._buffer.append(self._DAQ.io.InputValue_1.value)
         if self._producer.poll():
             instruction = self._producer.recv()
             if instruction == "start_stream":
@@ -110,8 +111,7 @@ class DataStreamer:
         the pipe and process. This should be done whenever control is taken
         and given up.
         """
-        DAQ = revpimodio2.RevPiModIO(autorefresh=True)
-        DAQ.cycleloop(self._cycle_handler, cycletime=25)
+        self._DAQ.cycleloop(self._cycle_handler, cycletime=25)
 
         # while True:
         #     if stream_data:
