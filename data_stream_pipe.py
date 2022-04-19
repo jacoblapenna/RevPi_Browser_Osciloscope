@@ -81,7 +81,7 @@ class DataStreamer:
         self._buffer = []
         self.DAQ = revpimodio2.RevPiModIO(autorefresh=True)
 
-    def _cycle_handler(self, ct):
+    def cycle_handler(self, ct):
         if self._stream_data:
             self._buffer.append(self.DAQ.io.InputValue_1.value)
         if self._producer.poll():
