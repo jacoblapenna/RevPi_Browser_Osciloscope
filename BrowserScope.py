@@ -95,8 +95,10 @@ class DataStreamer:
                 self._conn = pipe_connection
                 self._stream_data = False
                 self._buffer = []
+                self._start = time.time()
 
             def cycle_handler(self, ct):
+                print(time.time() - self._start)
                 if self._stream_data:
                     self._buffer.append(self.DAQ.io.InputValue_1.value/1000)
                 if self._conn.poll():
@@ -115,7 +117,7 @@ class DataStreamer:
 
         daq = DAQ(self._producer)
 
-        daq.DAQ.cycleloop(daq.cycle_handler, cycletime=10)
+        daq.DAQ.cycleloop(daq.cycle_handler, cycletime=1000)
 
     def control_stream(self, instruction, socket):
         if instruction == "start_stream":

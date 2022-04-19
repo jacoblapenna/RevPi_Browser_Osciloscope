@@ -49,7 +49,3 @@ socket.on("new_data", function(data) {
 function get_new_data() {
   socket.emit("get_new_data");
 }
-
-// socket.on("extrema", function(data) {
-//   console.log(data);
-// });
