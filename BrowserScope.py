@@ -72,9 +72,6 @@ class DataStreamer:
     pull from AIO on revpi here when ready
     """
     def __init__(self):
-        # self._freq = 2.0
-        # self._dt = 0.001
-        # self._time = 0
         self._consumer, self._producer = Pipe()
         self._extrema_detector = ExtremaDetector()
 
@@ -118,25 +115,7 @@ class DataStreamer:
 
         daq = DAQ(self._producer)
 
-        daq.DAQ.cycleloop(daq.cycle_handler, cycletime=25)
-
-        # while True:
-        #     if stream_data:
-        #         buffer.append(np.sin(self._freq*2*np.pi*self._time))
-        #         self._time += 0.001
-        #     if self._producer.poll():
-        #         instruction = self._producer.recv()
-        #         if instruction == "start_stream":
-        #             stream_data = True
-        #         elif instruction == "stop_stream":
-        #             stream_data = False
-        #             self._producer.send(buffer)
-        #             buffer = []
-        #         elif instruction == "get_new_data":
-        #             self._producer.send(buffer)
-        #             buffer = []
-        #         else:
-        #             raise Exception(f"Invalid instruction at producer: instruction=={instruction}")
+        daq.DAQ.cycleloop(daq.cycle_handler, cycletime=10)
 
     def control_stream(self, instruction, socket):
         if instruction == "start_stream":
