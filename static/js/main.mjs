@@ -3,7 +3,7 @@ import { Deque } from "./Deque.mjs";
 const socket =  io.connect(location.origin);
 const stream_control_button = document.getElementById("start");
 const canvas = document.getElementById("plot");
-const max_len = 5000;
+const max_len = 200;
 
 var stream_running = false;
 var deque = new Deque(max_len);
@@ -39,7 +39,6 @@ socket.on("stream_stopped", function() {
 
 socket.on("new_data", function(data) {
   data.data.forEach( function (value) {
-    console.log(value);
     deque.push(value)
   });
   deque.plot(canvas);

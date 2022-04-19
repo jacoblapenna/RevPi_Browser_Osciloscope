@@ -96,7 +96,7 @@ Deque.prototype.plot = function(canvas) {
   ctx.closePath();
   if (this.length) {
     const dt = w/this.max_len;
-    const vpd = (h/6) / 1.0;
+    const vpd = (h/6) / 3.0;
     var t = 0;
     var present_node = this.first;
     ctx.setLineDash([]);
