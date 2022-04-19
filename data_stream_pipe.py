@@ -13,6 +13,7 @@ import time
 from collections import deque
 import socket
 from collections import deque
+import revpimodio2
 
 from flask import Flask, render_template
 from flask_socketio import SocketIO
@@ -71,9 +72,9 @@ class DataStreamer:
     pull from AIO on revpi here when ready
     """
     def __init__(self):
-        self._freq = 2.0
-        self._dt = 0.001
-        self._time = 0
+        # self._freq = 2.0
+        # self._dt = 0.001
+        # self._time = 0
         self._consumer, self._producer = Pipe()
         self._extrema_detector = ExtremaDetector()
         self._stop_stream = False
@@ -91,12 +92,13 @@ class DataStreamer:
         the pipe and process. This should be done whenever control is taken
         and given up.
         """
+        DAQ = revpimodio2.RevPiModIO(autorefresh=True)
         stream_data = False
         buffer = []
-        while True:
+
+        def cycle(ct):
             if stream_data:
-                buffer.append(np.sin(self._freq*2*np.pi*self._time))
-                self._time += 0.001
+                buffer.append(DAQ.io.InputValue_1.value)
             if self._producer.poll():
                 instruction = self._producer.recv()
                 if instruction == "start_stream":
@@ -110,6 +112,26 @@ class DataStreamer:
                     buffer = []
                 else:
                     raise Exception(f"Invalid instruction at producer: instruction=={instruction}")
+
+        DAQ.cycleloop(cycle, cycletime=25)
+
+        # while True:
+        #     if stream_data:
+        #         buffer.append(np.sin(self._freq*2*np.pi*self._time))
+        #         self._time += 0.001
+        #     if self._producer.poll():
+        #         instruction = self._producer.recv()
+        #         if instruction == "start_stream":
+        #             stream_data = True
+        #         elif instruction == "stop_stream":
+        #             stream_data = False
+        #             self._producer.send(buffer)
+        #             buffer = []
+        #         elif instruction == "get_new_data":
+        #             self._producer.send(buffer)
+        #             buffer = []
+        #         else:
+        #             raise Exception(f"Invalid instruction at producer: instruction=={instruction}")
 
     def control_stream(self, instruction, socket):
         if instruction == "start_stream":
