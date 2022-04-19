@@ -101,7 +101,7 @@ class DataStreamer:
 
             def cycle_handler(self, ct):
                 if self._stream_data:
-                    self._buffer.append(self.DAQ.io.InputValue_1.value)
+                    self._buffer.append(self.DAQ.io.InputValue_1.value/1000)
                 if self._conn.poll():
                     instruction = self._conn.recv()
                     if instruction == "start_stream":
