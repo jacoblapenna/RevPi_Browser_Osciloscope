@@ -77,26 +77,6 @@ class DataStreamer:
         # self._time = 0
         self._consumer, self._producer = Pipe()
         self._extrema_detector = ExtremaDetector()
-        self._stream_data = False
-        self._buffer = []
-        self.DAQ = revpimodio2.RevPiModIO(autorefresh=True)
-
-    def cycle_handler(self, ct):
-        if self._stream_data:
-            self._buffer.append(self.DAQ.io.InputValue_1.value)
-        if self._producer.poll():
-            instruction = self._producer.recv()
-            if instruction == "start_stream":
-                self._stream_data = True
-            elif instruction == "stop_stream":
-                self._stream_data = False
-                self._producer.send(self._buffer)
-                self._buffer = []
-            elif instruction == "get_new_data":
-                self._producer.send(self._buffer)
-                self._buffer = []
-            else:
-                raise Exception(f"Invalid instruction at producer: instruction=={instruction}")
 
     def produce(self):
         """
@@ -111,7 +91,34 @@ class DataStreamer:
         the pipe and process. This should be done whenever control is taken
         and given up.
         """
-        self.DAQ.cycleloop(self._cycle_handler, cycletime=25)
+
+        class DAQ:
+            def __init__(self, pipe_connection):
+                self.DAQ = revpimodio2.RevPiModIO(autorefresh=True)
+                self._conn = pipe_connection
+                self._stream_data = False
+                self._buffer = []
+
+            def cycle_handler(self, ct):
+                if self._stream_data:
+                    self._buffer.append(self.DAQ.io.InputValue_1.value)
+                if self._producer.poll():
+                    instruction = self._producer.recv()
+                    if instruction == "start_stream":
+                        self._stream_data = True
+                    elif instruction == "stop_stream":
+                        self._stream_data = False
+                        self._producer.send(self._buffer)
+                        self._buffer = []
+                    elif instruction == "get_new_data":
+                        self._producer.send(self._buffer)
+                        self._buffer = []
+                    else:
+                        raise Exception(f"Invalid instruction at producer: instruction=={instruction}")
+
+        daq = DAQ(self._producer)
+
+        daq.DAQ.cycleloop(daq.cycle_handler, cycletime=25)
 
         # while True:
         #     if stream_data:
