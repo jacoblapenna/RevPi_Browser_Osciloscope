@@ -102,16 +102,16 @@ class DataStreamer:
             def cycle_handler(self, ct):
                 if self._stream_data:
                     self._buffer.append(self.DAQ.io.InputValue_1.value)
-                if self._producer.poll():
-                    instruction = self._producer.recv()
+                if self._conn.poll():
+                    instruction = self._conn.recv()
                     if instruction == "start_stream":
                         self._stream_data = True
                     elif instruction == "stop_stream":
                         self._stream_data = False
-                        self._producer.send(self._buffer)
+                        self._conn.send(self._buffer)
                         self._buffer = []
                     elif instruction == "get_new_data":
-                        self._producer.send(self._buffer)
+                        self._conn.send(self._buffer)
                         self._buffer = []
                     else:
                         raise Exception(f"Invalid instruction at producer: instruction=={instruction}")
@@ -168,8 +168,7 @@ def index():
 @socketio.on("start_stream")
 def start_stream():
     if not mp.active_children():
-        # producer_process = Process(target=data_streamer.produce, name="producer_process")
-        producer_process = Process(target=data_streamer.DAQ.cycleloop, name="producer_process", args=(data_streamer.cycle_handler,), kwargs={"cycletime": 25})
+        producer_process = Process(target=data_streamer.produce, name="producer_process")
         producer_process.start()
     data_streamer.control_stream("start_stream", socketio)
 
