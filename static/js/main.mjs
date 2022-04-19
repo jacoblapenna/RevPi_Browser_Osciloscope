@@ -39,6 +39,7 @@ socket.on("stream_stopped", function() {
 
 socket.on("new_data", function(data) {
   data.data.forEach( function (value) {
+    console.log(value);
     deque.push(value)
   });
   deque.plot(canvas);
