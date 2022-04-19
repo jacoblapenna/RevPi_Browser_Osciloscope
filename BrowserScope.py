@@ -98,7 +98,6 @@ class DataStreamer:
                 self._start = time.time()
 
             def cycle_handler(self, ct):
-                print(time.time() - self._start)
                 if self._stream_data:
                     self._buffer.append(self.DAQ.io.InputValue_1.value/1000)
                 if self._conn.poll():
