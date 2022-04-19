@@ -79,11 +79,11 @@ class DataStreamer:
         self._extrema_detector = ExtremaDetector()
         self._stream_data = False
         self._buffer = []
-        self._DAQ = revpimodio2.RevPiModIO(autorefresh=True)
+        self.DAQ = revpimodio2.RevPiModIO(autorefresh=True)
 
     def _cycle_handler(self, ct):
         if self._stream_data:
-            self._buffer.append(self._DAQ.io.InputValue_1.value)
+            self._buffer.append(self.DAQ.io.InputValue_1.value)
         if self._producer.poll():
             instruction = self._producer.recv()
             if instruction == "start_stream":
@@ -111,7 +111,7 @@ class DataStreamer:
         the pipe and process. This should be done whenever control is taken
         and given up.
         """
-        self._DAQ.cycleloop(self._cycle_handler, cycletime=25)
+        self.DAQ.cycleloop(self._cycle_handler, cycletime=25)
 
         # while True:
         #     if stream_data:
@@ -161,7 +161,8 @@ def index():
 @socketio.on("start_stream")
 def start_stream():
     if not mp.active_children():
-        producer_process = Process(target=data_streamer.produce, name="producer_process")
+        # producer_process = Process(target=data_streamer.produce, name="producer_process")
+        producer_process = Process(target=data_streamer.DAQ.cycleloop, name="producer_process", args=(data_streamer.cycle_handler,), kwargs={"cycletime: 25})
         producer_process.start()
     data_streamer.control_stream("start_stream", socketio)
 
