@@ -162,7 +162,7 @@ def index():
 def start_stream():
     if not mp.active_children():
         # producer_process = Process(target=data_streamer.produce, name="producer_process")
-        producer_process = Process(target=data_streamer.DAQ.cycleloop, name="producer_process", args=(data_streamer.cycle_handler,), kwargs={"cycletime: 25})
+        producer_process = Process(target=data_streamer.DAQ.cycleloop, name="producer_process", args=(data_streamer.cycle_handler,), kwargs={"cycletime": 25})
         producer_process.start()
     data_streamer.control_stream("start_stream", socketio)
 
