@@ -80,6 +80,23 @@ class DataStreamer:
         self._stream_data = False
         self._buffer = []
 
+    def _cycle_handler(self, ct):
+        if self._stream_data:
+            self._buffer.append(DAQ.io.InputValue_1.value)
+        if self._producer.poll():
+            instruction = self._producer.recv()
+            if instruction == "start_stream":
+                self._stream_data = True
+            elif instruction == "stop_stream":
+                self._stream_data = False
+                self._producer.send(self._buffer)
+                self._buffer = []
+            elif instruction == "get_new_data":
+                self._producer.send(self._buffer)
+                self._buffer = []
+            else:
+                raise Exception(f"Invalid instruction at producer: instruction=={instruction}")
+
     def produce(self):
         """
         This method is ran in another process, and, to be thread safe, all
@@ -94,25 +111,7 @@ class DataStreamer:
         and given up.
         """
         DAQ = revpimodio2.RevPiModIO(autorefresh=True)
-
-        def cycle_handler(self):
-            if self._stream_data:
-                self._buffer.append(DAQ.io.InputValue_1.value)
-            if self._producer.poll():
-                instruction = self._producer.recv()
-                if instruction == "start_stream":
-                    self._stream_data = True
-                elif instruction == "stop_stream":
-                    self._stream_data = False
-                    self._producer.send(self._buffer)
-                    self._buffer = []
-                elif instruction == "get_new_data":
-                    self._producer.send(self._buffer)
-                    self._buffer = []
-                else:
-                    raise Exception(f"Invalid instruction at producer: instruction=={instruction}")
-
-        DAQ.cycleloop(cycle_handler, cycletime=25)
+        DAQ.cycleloop(self._cycle_handler, cycletime=25)
 
         # while True:
         #     if stream_data:
