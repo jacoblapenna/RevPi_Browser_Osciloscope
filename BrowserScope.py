@@ -18,6 +18,14 @@ import revpimodio2
 from flask import Flask, render_template
 from flask_socketio import SocketIO
 
+try:
+    from daqhats import mcc118, OptionFlags, HatIDs, HatError
+    from daqhats_utils import select_hat_device, enum_mask_to_string, chan_list_to_mask
+    mcc_daqhat = True
+except ImportError:
+    # on revolution pi
+    mcc_daqhat = False
+
 app = Flask(__name__)
 socketio = SocketIO(app)
 # socketio = SocketIO(app)
@@ -71,9 +79,13 @@ class DataStreamer:
     """
     pull from AIO on revpi here when ready
     """
-    def __init__(self):
+    def __init__(self, hat):
         self._consumer, self._producer = Pipe()
         self._extrema_detector = ExtremaDetector()
+        self._hat = hat
+        if self._hat:
+            self._address = select_hat_device(HatIDs.MCC_118)
+            self._daq = mcc118(self._address)
 
     def produce(self):
         """
@@ -89,17 +101,51 @@ class DataStreamer:
         and given up.
         """
 
-        class DAQ:
-            def __init__(self, pipe_connection):
-                self.DAQ = revpimodio2.RevPiModIO(autorefresh=True)
-                self._conn = pipe_connection
-                self._stream_data = False
-                self._buffer = []
-                self._start = time.time()
+        """ Revolution Pi """
+        if not self._hat:
+            class DAQ:
+                def __init__(self, pipe_connection):
+                    self.daq = revpimodio2.RevPiModIO(autorefresh=True)
+                    self._conn = pipe_connection
+                    self._stream_data = False
+                    self._buffer = []
 
-            def cycle_handler(self, ct):
-                if self._stream_data:
-                    self._buffer.append(self.DAQ.io.InputValue_1.value/1000)
+                def cycle_handler(self, ct):
+                    if self._stream_data:
+                        self._buffer.append(self.daq.io.InputValue_1.value/1000)
+                    if self._conn.poll():
+                        instruction = self._conn.recv()
+                        if instruction == "start_stream":
+                            self._stream_data = True
+                        elif instruction == "stop_stream":
+                            self._stream_data = False
+                            self._conn.send(self._buffer)
+                            self._buffer = []
+                        elif instruction == "get_new_data":
+                            self._conn.send(self._buffer)
+                            self._buffer = []
+                        else:
+                            raise Exception(f"Invalid instruction at producer: instruction=={instruction}")
+
+            daq = DAQ(self._producer)
+
+            daq.daq.cycleloop(daq.cycle_handler, cycletime=25)
+
+        """ MCC Daqhat """
+        if self._hat:
+            channels = [0]
+            channel_mask = chan_list_to_mask(self._channels)
+            options = OptionFlags.CONTINUOUS
+            scan_rate = 30
+            samples = round(self._scan_rate * 3600)
+            stream_data = False
+            buffer = []
+
+            self._daq.a_in_scan_start(channel_mask, samples, scan_rate, options)
+
+            while True:
+                 if self._stream_data:
+                    buffer += self._daq.a_in_scan_read().data
                 if self._conn.poll():
                     instruction = self._conn.recv()
                     if instruction == "start_stream":
@@ -113,10 +159,6 @@ class DataStreamer:
                         self._buffer = []
                     else:
                         raise Exception(f"Invalid instruction at producer: instruction=={instruction}")
-
-        daq = DAQ(self._producer)
-
-        daq.DAQ.cycleloop(daq.cycle_handler, cycletime=25)
 
     def control_stream(self, instruction, socket):
         if instruction == "start_stream":
@@ -164,7 +206,7 @@ def get_new_data():
 
 
 if __name__ == "__main__":
-    data_streamer = DataStreamer()
+    data_streamer = DataStreamer(hat=mcc_daqhat)
     ip = get_ip_address()
     socketio.run(app,
                  host=ip,
