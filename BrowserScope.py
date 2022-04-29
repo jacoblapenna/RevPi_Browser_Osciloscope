@@ -206,6 +206,7 @@ def get_new_data():
 
 
 if __name__ == "__main__":
+    print(f"mcc_daqhat={mcc_daqhat}")
     data_streamer = DataStreamer(hat=mcc_daqhat)
     ip = get_ip_address()
     socketio.run(app,
