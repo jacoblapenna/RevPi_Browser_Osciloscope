@@ -136,7 +136,7 @@ class DataStreamer:
         if self._hat:
             channels = [0]
             channel_mask = chan_list_to_mask(channels)
-            options = self._macc_option
+            options = self._mcc_option
             scan_rate = 30
             samples = round(scan_rate * 3600)
             stream_data = False
