@@ -142,7 +142,10 @@ class DataStreamer:
 
             while True:
                 if stream_data:
-                    buffer += self._daq.a_in_scan_read(-1, 0).data
+                    buffer = self._daq.a_in_scan_read(-1, 0).data
+                    if buffer:
+                        self._producer.send(buffer)
+                        buffer = []
                 if self._producer.poll():
                     instruction = self._producer.recv()
                     if instruction == "start_stream":
@@ -152,10 +155,6 @@ class DataStreamer:
                         self._daq.a_in_scan_stop()
                         self._daq.a_in_scan_cleanup()
                         stream_data = False
-                        self._producer.send(buffer)
-                        buffer = []
-                    elif instruction == "get_new_data":
-                        self._producer.send(buffer)
                         buffer = []
                     else:
                         raise Exception(f"Invalid instruction at producer: instruction=={instruction}")
@@ -175,11 +174,9 @@ class DataStreamer:
             raise Exception(f"Invalid instruction at consumer: instruction=={instruction}")
 
     def _consume(self, timeout, socket):
-        buffer = None
         if self._consumer.poll(timeout):
             buffer = self._consumer.recv()
-            if buffer:
-                socket.emit("new_data", {"data" : buffer})
+            socket.emit("new_data", {"data" : buffer})
 
 
 @app.route('/')
