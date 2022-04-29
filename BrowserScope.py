@@ -86,6 +86,7 @@ class DataStreamer:
         if self._hat:
             self._address = select_hat_device(HatIDs.MCC_118)
             self._daq = mcc118(self._address)
+            self._mcc_option = OptionFlags.CONTINUOUS
 
     def produce(self):
         """
@@ -109,7 +110,6 @@ class DataStreamer:
                     self._conn = pipe_connection
                     self._stream_data = False
                     self._buffer = []
-                    self._macc_option = OptionFlags.CONTINUOUS
 
                 def cycle_handler(self, ct):
                     if self._stream_data:
