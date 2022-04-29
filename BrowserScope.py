@@ -144,7 +144,7 @@ class DataStreamer:
             self._daq.a_in_scan_start(channel_mask, samples, scan_rate, options)
 
             while True:
-                 if self._stream_data:
+                if self._stream_data:
                     buffer += self._daq.a_in_scan_read().data
                 if self._conn.poll():
                     instruction = self._conn.recv()
