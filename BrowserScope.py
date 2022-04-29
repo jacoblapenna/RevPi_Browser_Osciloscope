@@ -109,6 +109,7 @@ class DataStreamer:
                     self._conn = pipe_connection
                     self._stream_data = False
                     self._buffer = []
+                    self._macc_option = OptionFlags.CONTINUOUS
 
                 def cycle_handler(self, ct):
                     if self._stream_data:
@@ -135,9 +136,9 @@ class DataStreamer:
         if self._hat:
             channels = [0]
             channel_mask = chan_list_to_mask(channels)
-            options = OptionFlags.CONTINUOUS
+            options = self._macc_option
             scan_rate = 30
-            samples = round(self._scan_rate * 3600)
+            samples = round(scan_rate * 3600)
             stream_data = False
             buffer = []
 
