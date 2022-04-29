@@ -87,6 +87,7 @@ class DataStreamer:
             self._address = select_hat_device(HatIDs.MCC_118)
             self._daq = mcc118(self._address)
             self._mcc_option = OptionFlags.CONTINUOUS
+            self._stream_data = False
 
     def produce(self):
         """
@@ -147,17 +148,17 @@ class DataStreamer:
             while True:
                 if self._stream_data:
                     buffer += self._daq.a_in_scan_read().data
-                if self._conn.poll():
-                    instruction = self._conn.recv()
+                if self._producer.poll():
+                    instruction = self._producer.recv()
                     if instruction == "start_stream":
                         self._stream_data = True
                     elif instruction == "stop_stream":
                         self._stream_data = False
-                        self._conn.send(self._buffer)
-                        self._buffer = []
+                        self._producer.send(buffer)
+                        buffer = []
                     elif instruction == "get_new_data":
-                        self._conn.send(self._buffer)
-                        self._buffer = []
+                        self._producer.send(buffer)
+                        buffer = []
                     else:
                         raise Exception(f"Invalid instruction at producer: instruction=={instruction}")
 
