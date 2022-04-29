@@ -178,7 +178,8 @@ class DataStreamer:
         buffer = None
         if self._consumer.poll(timeout):
             buffer = self._consumer.recv()
-            socket.emit("new_data", {"data" : buffer})
+            if buffer:
+                socket.emit("new_data", {"data" : buffer})
 
 
 @app.route('/')
