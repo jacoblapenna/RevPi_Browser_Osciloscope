@@ -142,7 +142,7 @@ class DataStreamer:
 
             while True:
                 if stream_data:
-                    buffer += self._daq.a_in_scan_read(-1,-1).data
+                    buffer += self._daq.a_in_scan_read(-1, 0).data
                 if self._producer.poll():
                     instruction = self._producer.recv()
                     if instruction == "start_stream":
