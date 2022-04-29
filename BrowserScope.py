@@ -87,7 +87,7 @@ class DataStreamer:
             self._address = select_hat_device(HatIDs.MCC_118)
             self._daq = mcc118(self._address)
             self._options = OptionFlags.CONTINUOUS
-            self._channel_mask = chan_list_to_mask([0]])
+            self._channel_mask = chan_list_to_mask([0])
             self._scan_rate = 30
             self._samples = round(scan_rate * 3600)
 
