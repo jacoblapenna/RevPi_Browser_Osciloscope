@@ -84,14 +84,12 @@ class DataStreamer:
         self._extrema_detector = ExtremaDetector()
         self._hat = hat
         if self._hat:
-            address = select_hat_device(HatIDs.MCC_118)
-            self._daq = mcc118(address)
-            options = OptionFlags.CONTINUOUS
-            channels = [0]
-            channel_mask = chan_list_to_mask(channels)
-            scan_rate = 30
-            samples = round(scan_rate * 3600)
-            self._daq.a_in_scan_start(channel_mask, samples, scan_rate, options)
+            self._address = select_hat_device(HatIDs.MCC_118)
+            self._daq = mcc118(self._address)
+            self._options = OptionFlags.CONTINUOUS
+            self._channel_mask = chan_list_to_mask([0]])
+            self._scan_rate = 30
+            self._samples = round(scan_rate * 3600)
 
     def produce(self):
         """
@@ -140,6 +138,7 @@ class DataStreamer:
         """ MCC Daqhat """
         if self._hat:
             stream_data = False
+            streaming = False
             buffer = []
 
             while True:
@@ -148,8 +147,11 @@ class DataStreamer:
                 if self._producer.poll():
                     instruction = self._producer.recv()
                     if instruction == "start_stream":
+                        self._daq.a_in_scan_start(self._channel_mask, self._samples, self._scan_rate, self._options)
                         stream_data = True
                     elif instruction == "stop_stream":
+                        self._daq.a_in_scan_stop()
+                        self._daq.a_in_acan_cleanup()
                         stream_data = False
                         self._producer.send(buffer)
                         buffer = []
