@@ -143,7 +143,6 @@ class DataStreamer:
             while True:
                 if stream_data:
                     buffer += self._daq.a_in_scan_read(-1, 0).data
-                    print(buffer)
                 if self._producer.poll():
                     instruction = self._producer.recv()
                     if instruction == "start_stream":
@@ -179,6 +178,7 @@ class DataStreamer:
         buffer = None
         if self._consumer.poll(timeout):
             buffer = self._consumer.recv()
+            print(buffer)
             if buffer:
                 socket.emit("new_data", {"data" : buffer})
 
