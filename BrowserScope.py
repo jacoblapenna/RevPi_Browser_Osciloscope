@@ -150,7 +150,7 @@ class DataStreamer:
                         stream_data = True
                     elif instruction == "stop_stream":
                         self._daq.a_in_scan_stop()
-                        self._daq.a_in_acan_cleanup()
+                        self._daq.a_in_scan_cleanup()
                         stream_data = False
                         self._producer.send(buffer)
                         buffer = []
