@@ -38,8 +38,7 @@ socket.on("stream_stopped", function() {
 });
 
 socket.on("new_data", function(data) {
-  console.log(deque.length);
-  
+  console.log(data.data);
   data.data.forEach( function (value) {
     deque.push(value)
   });
