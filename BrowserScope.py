@@ -84,7 +84,7 @@ class DataStreamer:
         self._extrema_detector = ExtremaDetector()
         self._hat = hat
         if self._hat:
-            self._address = select_hat_device(HatIDs.MCC_118)
+            self._address = HatIDs.MCC_118.address
             self._daq = mcc118(self._address)
 
     def produce(self):
