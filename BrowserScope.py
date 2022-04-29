@@ -89,7 +89,6 @@ class DataStreamer:
             options = OptionFlags.CONTINUOUS
             channels = [0]
             channel_mask = chan_list_to_mask(channels)
-            options = self._mcc_option
             scan_rate = 30
             samples = round(scan_rate * 3600)
             self._daq.a_in_scan_start(channel_mask, samples, scan_rate, options)
@@ -142,8 +141,6 @@ class DataStreamer:
         if self._hat:
             stream_data = False
             buffer = []
-
-            self._daq.a_in_scan_start(channel_mask, samples, scan_rate, options)
 
             while True:
                 if stream_data:
