@@ -89,7 +89,7 @@ class DataStreamer:
             self._options = OptionFlags.CONTINUOUS
             self._channel_mask = chan_list_to_mask([0])
             self._scan_rate = 30
-            self._samples = round(scan_rate * 3600)
+            self._samples = round(self._scan_rate * 3600)
 
     def produce(self):
         """
@@ -138,7 +138,6 @@ class DataStreamer:
         """ MCC Daqhat """
         if self._hat:
             stream_data = False
-            streaming = False
             buffer = []
 
             while True:
@@ -207,7 +206,6 @@ def get_new_data():
 
 
 if __name__ == "__main__":
-    print(f"mcc_daqhat={mcc_daqhat}")
     data_streamer = DataStreamer(hat=mcc_daqhat)
     ip = get_ip_address()
     socketio.run(app,
