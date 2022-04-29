@@ -134,7 +134,7 @@ class DataStreamer:
         """ MCC Daqhat """
         if self._hat:
             channels = [0]
-            channel_mask = chan_list_to_mask(self._channels)
+            channel_mask = chan_list_to_mask(channels)
             options = OptionFlags.CONTINUOUS
             scan_rate = 30
             samples = round(self._scan_rate * 3600)
