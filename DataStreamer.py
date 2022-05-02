@@ -37,7 +37,6 @@ class DataStreamer:
                 if self._produce_stream:
                     new_data = self._daq.io.InputValue_1.value/1000
                     self._socketio.emit("new_data", {"data" : new_data})
-                    self._conn.send(new_data)
                 if self._conn.poll():
                     instruction = self._conn.recv()
                     if instruction == "start_stream":
@@ -50,6 +49,7 @@ class DataStreamer:
                         raise Exception(f"Producer received invalid instruction: instruction={instruction}")
 
             def produce(self):
+                self._conn.send("Starting cycle loop...")
                 self._daq.cycleloop(self._cycle_handler, cycletime=25)
 
         daq = DAQ(self._producer_socketio, self._producer_conn)
