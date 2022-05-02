@@ -32,12 +32,12 @@ class DataStreamer:
                 self._socketio = socketio
                 self._conn = conn
                 self._daq = revpimodio2.RevPiModIO(autorefresh=True)
-                self._conn.send("Initialized DAQ object...")
 
             def _cycle_handler(self, ct):
                 if self._produce_stream:
                     new_data = self._daq.io.InputValue_1.value/1000
                     self._socketio.emit("new_data", {"data" : new_data})
+                    self._conn.send(new_data)
                 if self._conn.poll():
                     instruction = self._conn.recv()
                     if instruction == "start_stream":
