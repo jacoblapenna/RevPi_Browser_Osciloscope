@@ -15,7 +15,7 @@ class DataStreamer:
         self._producer_process.start()
 
     def _cycle_handler(self, ct):
-        if self._stream_data:
+        if self._produce_stream:
             new_data = self._daq.io.InputValue_1.value/1000
             self._producer_socketio.emit("new_data", {"data" : new_data})
         if self._producer_conn.poll():
