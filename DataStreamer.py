@@ -9,7 +9,6 @@ class DataStreamer:
     """
     def __init__(self):
         self._produce_stream = False
-        self._daq = revpimodio2.RevPiModIO(autorefresh=True)
         self._producer_socketio = SocketIO(message_queue='redis://')
         self._controller_conn, self._producer_conn = Pipe()
         self._producer_process = Process(target=self._produce, name="producer_process")
@@ -43,7 +42,8 @@ class DataStreamer:
         the pipe and process. This should be done whenever control is taken
         and given up.
         """
-        self._daq.cycleloop(self._cycle_handler, cycletime=25)
+        daq = revpimodio2.RevPiModIO(autorefresh=True)
+        daq.cycleloop(self._cycle_handler, cycletime=25)
 
     def control_stream(self, instruction, socket):
         if instruction == "start_stream":
