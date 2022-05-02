@@ -32,6 +32,7 @@ class DataStreamer:
                 self._socketio = socketio
                 self._conn = conn
                 self._daq = revpimodio2.RevPiModIO(autorefresh=True)
+                self._conn.send("Initialized DAQ object...")
 
             def _cycle_handler(self, ct):
                 if self._produce_stream:
@@ -57,8 +58,9 @@ class DataStreamer:
     def control_stream(self, instruction):
         if instruction == "start_stream":
             self._controller_conn.send(instruction)
-            print("Sending start_stream instruction...")
         elif instruction == "stop_stream":
             self._controller_conn.send(instruction)
         else:
             raise Exception(f"Attempt to send invalid instruction to producer: instruction={instruction}")
+        if self._controller_conn.poll(10):
+            print(self._controller_conn.recv())
