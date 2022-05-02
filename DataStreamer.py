@@ -1,7 +1,7 @@
 from multiprocessing import Pipe, Process
 import revpimodio2
 
-from random import randing
+from random import randint
 from time import sleep
 
 from flask_socketio import SocketIO
