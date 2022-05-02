@@ -55,15 +55,15 @@ class DataStreamer:
                 while True:
                     if self._produce_stream:
                         new_data = round(randint(-1000, 1000)/100, 2)
-                        self._producer_socketio.emit("new_data", {"data" : new_data}) # emit here
-                    if self._producer_conn.poll():
-                        instruction = self._producer_conn.recv()
+                        self._socketio.emit("new_data", {"data" : new_data}) # emit here
+                    if self._conn.poll():
+                        instruction = self._conn.recv()
                         if instruction == "start_stream":
                             self._produce_stream = True
-                            self._producer_socketio.emit("stream_started")
+                            self._socketio.emit("stream_started")
                         elif instruction == "stop_stream":
                             self._produce_stream = False
-                            self._producer_socketio.emit("stream_stopped")
+                            self._socketio.emit("stream_stopped")
                         else:
                             raise Exception("Invalid instruction!")
                     sleep(0.1)
