@@ -3,7 +3,7 @@ import { Deque } from "./Deque.mjs";
 const socket =  io.connect(location.origin);
 const stream_control_button = document.getElementById("start");
 const canvas = document.getElementById("plot");
-const max_len = 5000; // should be 5000/cycletime (ms)
+const max_len = 240;
 
 var stream_running = false;
 var deque = new Deque(max_len);
@@ -13,40 +13,32 @@ add_stream_control_handler(stream_control_button);
 
 function add_stream_control_handler(element) {
   element.addEventListener("click", function() {
-      control_stream(this);
+      control_stream();
     }, {once: true});
 }
 
-function control_stream(element) {
+function control_stream() {
   if (stream_running) {
     socket.emit("stop_stream");
   } else {
     socket.emit("start_stream");
   }
-  add_stream_control_handler(element); // consider moving to stream_started and stream_stopped events to reset event listener
 }
 
 socket.on("stream_started", function() {
   stream_running = true;
   stream_control_button.innerHTML = "Stop";
-  get_new_data();
+  add_stream_control_handler(stream_control_button);
 });
 
 socket.on("stream_stopped", function() {
   stream_running = false;
   stream_control_button.innerHTML = "Start";
+  add_stream_control_handler(stream_control_button);
 });
 
 socket.on("new_data", function(data) {
   console.log(data.data);
-  data.data.forEach( function (value) {
-    deque.push(value)
-  });
+  deque.push(data.data);
   deque.plot(canvas);
-  get_new_data();
 });
-
-function get_new_data() {
-  console.log("Getting new data...")
-  socket.emit("get_new_data");
-}

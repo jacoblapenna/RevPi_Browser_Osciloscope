@@ -1,0 +1,54 @@
+from multiprocessing import Pipe, Process
+import revpimodio2
+
+from flask_socketio import SocketIO
+
+class DataStreamer:
+    """
+    pull from AIO on revpi here when ready
+    """
+    def __init__(self):
+        self._produce_stream = False
+        self._daq = revpimodio2.RevPiModIO(autorefresh=True)
+        self._producer_socketio = SocketIO(message_queue='redis://')
+        self._controller_conn, self._producer_conn = Pipe()
+        self._producer_process = Process(target=self._produce, name="producer_process")
+        self._producer_process.start()
+
+    def _cycle_handler(self, ct):
+        if self._stream_data:
+            new_data = self._daq.io.InputValue_1.value/1000
+            self._producer_socketio.emit("new_data", {"data" : new_data})
+        if self._producer_conn.poll():
+            instruction = self._producer_conn.recv()
+            if instruction == "start_stream":
+                self._produce_stream = True
+                self._producer_socketio.emit("stream_started")
+            elif instruction == "stop_stream":
+                self._produce_stream = False
+                self._producer_socketio.emit("stream_stopped")
+            else:
+                raise Exception(f"Producer received invalid instruction: instruction={instruction}")
+
+    def _produce(self):
+        """
+        This method is ran in another process, and, to be thread safe, all
+        class attributes used here cannot be used in any other method other
+        than __init__.
+
+        This process is always running and whether data is streamed or not is
+        determined via duplex communication through the pipe.
+
+        Eventually, an instruction will need to  be added to stop and restart
+        the pipe and process. This should be done whenever control is taken
+        and given up.
+        """
+        self._daq.cycleloop(self._cycle_handler, cycletime=25)
+
+    def control_stream(self, instruction, socket):
+        if instruction == "start_stream":
+            self._controller_conm.send(instruction)
+        elif instruction == "stop_stream":
+            self._controller_conn.send(instruction)
+        else:
+            raise Exception(f"Attempt to send invalid instruction to producer: instruction={instruction}")
