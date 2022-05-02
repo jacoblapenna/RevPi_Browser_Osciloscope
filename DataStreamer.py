@@ -47,7 +47,7 @@ class DataStreamer:
 
     def control_stream(self, instruction):
         if instruction == "start_stream":
-            self._controller_conm.send(instruction)
+            self._controller_conn.send(instruction)
         elif instruction == "stop_stream":
             self._controller_conn.send(instruction)
         else:
