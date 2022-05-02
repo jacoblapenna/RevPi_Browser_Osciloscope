@@ -45,7 +45,7 @@ class DataStreamer:
         daq = revpimodio2.RevPiModIO(autorefresh=True)
         daq.cycleloop(self._cycle_handler, cycletime=25)
 
-    def control_stream(self, instruction, socket):
+    def control_stream(self, instruction):
         if instruction == "start_stream":
             self._controller_conm.send(instruction)
         elif instruction == "stop_stream":
