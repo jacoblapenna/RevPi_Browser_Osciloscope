@@ -167,9 +167,6 @@ class DataStreamer:
             self._consumer.send(instruction)
             self._consume(1, socket)
             socket.emit("stream_stopped")
-        elif instruction == "get_new_data":
-            self._consumer.send(instruction)
-            self._consume(1, socket)
         else:
             raise Exception(f"Invalid instruction at consumer: instruction=={instruction}")
 
@@ -177,6 +174,8 @@ class DataStreamer:
         if self._consumer.poll(timeout):
             buffer = self._consumer.recv()
             socket.emit("new_data", {"data" : buffer})
+        else:
+            socket.emit("no_new_data")
 
 
 @app.route('/')
