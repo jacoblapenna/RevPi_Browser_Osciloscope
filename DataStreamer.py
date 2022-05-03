@@ -18,9 +18,10 @@ class DataStreamer:
         self._producer_process.start()
 
     def _produce(self):
+        daq = revpimodio2.RevPiModIO(autorefresh=True)
         while True:
             if self._produce_stream:
-                new_data = round(randint(-500, 500)/100, 2)
+                new_data = daq.io.InputValue_1.value/1000
                 self._producer_socketio.emit("new_data", {"data" : new_data}) # emit here
             if self._producer_conn.poll():
                 instruction = self._producer_conn.recv()
@@ -32,7 +33,7 @@ class DataStreamer:
                     self._producer_socketio.emit("stream_stopped")
                 else:
                     raise Exception("Invalid instruction!")
-            sleep(0.1)
+            sleep(0.025)
         """
         This method is ran in another process, and, to be thread safe, all
         class attributes used here cannot be used in any other method other
