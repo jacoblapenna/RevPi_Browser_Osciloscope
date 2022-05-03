@@ -43,5 +43,5 @@ if __name__ == "__main__":
                  host=server.ip,
                  port=8080,
                  use_reloader=True,
-                 debug=False,
+                 debug=True,
                  extra_files=["templates/index.html"])

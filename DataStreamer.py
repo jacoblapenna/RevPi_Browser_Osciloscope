@@ -11,8 +11,7 @@ class DataStreamer:
     pull from AIO on revpi here when ready
     """
     def __init__(self):
-        self._produce_stream = False # TEMP
-        self._producer_socketio = None#SocketIO(message_queue='redis://')
+        self._producer_socketio = SocketIO(message_queue='redis://')
         self._controller_conn, self._producer_conn = Pipe()
         self._producer_process = Process(target=self._produce, name="producer_process")
         self._producer_process.start()
@@ -36,29 +35,25 @@ class DataStreamer:
                 self.buffer = []
                 self._socketio = socketio
                 self._conn = conn
-                # self._revpi = revpimodio2.RevPiModIO(autorefresh=True)
+                self._revpi = revpimodio2.RevPiModIO(autorefresh=True)
 
             def _cycle_handler(self, ct):
-                pass
-                # if self._produce_stream:
-                #     new_data = randint(-500, 500)/100
-                #     self._socketio.emit("new_data", {"data" : new_data})
-                # if self._conn.poll():
-                #     instruction = self._conn.recv()
-                #     if instruction == "start_stream":
-                #         self._produce_stream = True
-                #         self._socketio.emit("stream_started")
-                #     elif instruction == "stop_stream":
-                #         self._produce_stream = False
-                #         self._socketio.emit("stream_stopped")
-                #     else:
-                #         raise Exception(f"Producer received invalid instruction: instruction={instruction}")
+                if self._produce_stream:
+                    new_data = randint(-500, 500)/100
+                    self._socketio.emit("new_data", {"data" : new_data})
+                if self._conn.poll():
+                    instruction = self._conn.recv()
+                    if instruction == "start_stream":
+                        self._produce_stream = True
+                        self._socketio.emit("stream_started")
+                    elif instruction == "stop_stream":
+                        self._produce_stream = False
+                        self._socketio.emit("stream_stopped")
+                    else:
+                        raise Exception(f"Producer received invalid instruction: instruction={instruction}")
 
             def produce(self):
-                # self._revpi.cycleloop(self._cycle_handler, cycletime=25)
-                while True:
-                    self._cycle_handler(1)
-                    sleep(0.025)
+                self._revpi.cycleloop(self._cycle_handler, cycletime=25)
 
         daq = DAQ(self._producer_socketio, self._producer_conn)
         daq.produce()
