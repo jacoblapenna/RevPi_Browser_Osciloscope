@@ -80,5 +80,3 @@ class DataStreamer:
             self._controller_conn.send(instruction)
         else:
             raise Exception(f"Attempt to send invalid instruction to producer: instruction={instruction}")
-        if self._controller_conn.poll(10):
-            print(self._controller_conn.recv())
