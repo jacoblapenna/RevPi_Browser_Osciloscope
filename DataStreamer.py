@@ -12,10 +12,10 @@ class DataStreamer:
     """
     def __init__(self):
         self._producer_socketio = SocketIO(message_queue='redis://')
-        self._controller_conn, self._producer_conn = Pipe()
-        # self._producer_process = Process(target=self._produce, name="producer_process")
-        # self._producer_process.start()
+        self._controller_conn, self._producer_conn = Pipe
         self._revpi = revpimodio2.RevPiModIO(autorefresh=True)
+        self._producer_process = Process(target=self._produce, name="producer_process")
+        self._producer_process.start()
 
     def _produce(self):
         """
