@@ -54,7 +54,9 @@ class DataStreamer:
             def produce(self):
                 self._daq.cycleloop(self._cycle_handler, cycletime=25)
 
-        daq = DAQ(self._producer_socketio, self._producer_conn)
+        socketio = self._producer_socketio
+        conn = self._producer_conn
+        daq = DAQ(socketio, conn)
         # daq._cycle_handler(1)
         daq._conn.send("Sent from daq connection.")
 
