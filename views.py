@@ -39,9 +39,10 @@ if __name__ == "__main__":
     else:
         raise Exception("Check that redis-server.service is running!")
     server = Server()
-    socketio.run(app,
-                 host=server.ip,
-                 port=8080,
-                 use_reloader=True,
-                 debug=True,
-                 extra_files=["templates/index.html"])
+    print(dir(streamer))
+    # socketio.run(app,
+    #              host=server.ip,
+    #              port=8080,
+    #              use_reloader=True,
+    #              debug=True,
+    #              extra_files=["templates/index.html"])
