@@ -28,7 +28,9 @@ class DataStreamer:
         """
         class DAQ:
             def __init__(self, pipe_connection):
+                print("reaches here...")
                 self.daq = revpimodio2.RevPiModIO(autorefresh=True)
+                print("Does it reach here?")
                 self._conn = pipe_connection
                 self._stream_data = False
                 self._buffer = []
