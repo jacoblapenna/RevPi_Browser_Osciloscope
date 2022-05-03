@@ -36,7 +36,6 @@ class DataStreamer:
                 self._socketio = socketio
                 self._conn = conn
                 # self._revpi = revpimodio2.RevPiModIO(autorefresh=True)
-                # print(dir(self._revpi))
 
             def _cycle_handler(self, ct):
                 if self._produce_stream:
