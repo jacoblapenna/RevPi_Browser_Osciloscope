@@ -58,23 +58,23 @@ class DataStreamer:
         conn = self._producer_conn
         daq = DAQ(socketio, conn)
         # daq._cycle_handler(1)
-        daq._conn.send("Sent from daq connection.")
+        conn.send(dir(daq))
 
-        while True:
-            if daq._produce_stream:
-                new_data = round(randint(-1000, 1000)/100, 2)
-                daq._socketio.emit("new_data", {"data" : 0.00}) # emit here
-            if daq._conn.poll():
-                instruction = daq._conn.recv()
-                if instruction == "start_stream":
-                    daq._produce_stream = True
-                    daq._socketio.emit("stream_started")
-                elif instruction == "stop_stream":
-                    daq._produce_stream = False
-                    daq._socketio.emit("stream_stopped")
-                else:
-                    raise Exception("Invalid instruction!")
-            sleep(0.1)
+        # while True:
+        #     if daq._produce_stream:
+        #         new_data = round(randint(-1000, 1000)/100, 2)
+        #         daq._socketio.emit("new_data", {"data" : 0.00}) # emit here
+        #     if daq._conn.poll():
+        #         instruction = daq._conn.recv()
+        #         if instruction == "start_stream":
+        #             daq._produce_stream = True
+        #             daq._socketio.emit("stream_started")
+        #         elif instruction == "stop_stream":
+        #             daq._produce_stream = False
+        #             daq._socketio.emit("stream_stopped")
+        #         else:
+        #             raise Exception("Invalid instruction!")
+        #     sleep(0.1)
 
     def control_stream(self, instruction):
         if instruction == "start_stream":
