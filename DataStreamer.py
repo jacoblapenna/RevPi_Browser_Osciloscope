@@ -63,7 +63,7 @@ class DataStreamer:
         while True:
             if daq._produce_stream:
                 new_data = round(randint(-1000, 1000)/100, 2)
-                daq._socketio.emit("new_data", {"data" : new_data}) # emit here
+                daq._socketio.emit("new_data", {"data" : 0.00}) # emit here
             if daq._conn.poll():
                 instruction = daq._conn.recv()
                 if instruction == "start_stream":
