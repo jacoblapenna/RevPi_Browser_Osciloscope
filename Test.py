@@ -14,8 +14,8 @@ def process_target(conn):
         def produce(self):
             self._revpi.cycleloop(self._produce_data, cycletime=25)
 
-        daq = DAQ(conn)
-        daq.produce()
+    daq = DAQ(conn)
+    daq.produce()
 
 conn1, conn2 = Pipe()
 p = Process(target=process_target, args=(conn2,))
