@@ -30,7 +30,6 @@ class DataStreamer:
         the pipe and process. This should be done whenever control is taken
         and given up.
         """
-        print("Entering producer function from producer process...")
         class DAQ:
             def __init__(self, socketio, conn):
                 self._produce_stream = False
@@ -60,9 +59,7 @@ class DataStreamer:
                     self._cycle_handler(1)
                     sleep(0.025)
 
-        print("Initializing DAQ object...")
         daq = DAQ(self._producer_socketio, self._producer_conn)
-        print("DAQ object initialized...")
         daq.produce()
 
     def control_stream(self, instruction):
