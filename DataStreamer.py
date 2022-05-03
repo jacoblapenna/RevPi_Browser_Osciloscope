@@ -56,6 +56,7 @@ class DataStreamer:
 
         daq = DAQ(self._producer_socketio, self._producer_conn)
         # daq._cycle_handler(1)
+        daq._conn.send("Sent from daq connection.")
 
         while True:
             if daq._produce_stream:
@@ -80,3 +81,5 @@ class DataStreamer:
             self._controller_conn.send(instruction)
         else:
             raise Exception(f"Attempt to send invalid instruction to producer: instruction={instruction}")
+        if self._controller_conn.poll(10):
+            print(self._controller_conn.recv())
