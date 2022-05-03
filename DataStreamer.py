@@ -27,62 +27,40 @@ class DataStreamer:
         determined via duplex communication through the pipe.
         """
         class DAQ:
-            def __init__(self, pipe_connection):
-                print("reaches here...")
-                self.daq = revpimodio2.RevPiModIO(autorefresh=True)
-                print("###############################################################################################")
-                self._conn = pipe_connection
-                self._stream_data = False
-                self._buffer = []
+            def __init__(self, socketio, conn):
+                self._produce_stream = False
+                self._socketio = socketio
+                self._conn = conn
+                print("1111111111111111111111111111111111111111111111111111111111111111111111111111111111111")
+                self._revpi = revpimodio2.RevPiModIO(autorefresh=True, debug=True) # this line breaks everything, I don't know why
+                print("222222222222222222222222222222222222222222222222222222222222222222222222222222222222222")
 
-            def cycle_handler(self, ct):
-                if self._stream_data:
-                    new_data = self.daq.io.InputValue_1.value/1000
-                    print(new_data)
+            def _cycle_handler(self, ct):
+                if self._produce_stream:
+                    new_data = randint(-500, 500)/100
+                    # new_data = self._revpi.io.InputValue_1.value/1000
+                    self._socketio.emit("new_data", {"data" : new_data})
                 if self._conn.poll():
                     instruction = self._conn.recv()
                     if instruction == "start_stream":
-                        self._stream_data = True
+                        self._produce_stream = True
+                        self._socketio.emit("stream_started")
                     elif instruction == "stop_stream":
-                        self._stream_data = False
-                        self._conn.send(self._buffer)
+                        self._produce_stream = False
+                        self._socketio.emit("stream_stopped")
                     else:
-                        raise Exception(f"Invalid instruction at producer: instruction=={instruction}")
+                        raise Exception(f"Producer received invalid instruction: instruction={instruction}")
 
-        daq = DAQ(self._producer_conn)
+            def produce(self):
+                # self._revpi.cycleloop(self._cycle_handler, cycletime=25)
+                while True:
+                    self._cycle_handler(1)
+                    sleep(0.025)
 
-        daq.daq.cycleloop(daq.cycle_handler, cycletime=25)
-        # class DAQ:
-        #     def __init__(self, socketio, conn):
-        #         self._produce_stream = False
-        #         self._socketio = socketio
-        #         self._conn = conn
-        #         self._revpi = revpimodio2.RevPiModIO(autorefresh=True, debug=True) # this line breaks everything, I don't know why
-        #
-        #     def _cycle_handler(self, ct):
-        #         if self._produce_stream:
-        #             new_data = randint(-500, 500)/100
-        #             # new_data = self._revpi.io.InputValue_1.value/1000
-        #             self._socketio.emit("new_data", {"data" : new_data})
-        #         if self._conn.poll():
-        #             instruction = self._conn.recv()
-        #             if instruction == "start_stream":
-        #                 self._produce_stream = True
-        #                 self._socketio.emit("stream_started")
-        #             elif instruction == "stop_stream":
-        #                 self._produce_stream = False
-        #                 self._socketio.emit("stream_stopped")
-        #             else:
-        #                 raise Exception(f"Producer received invalid instruction: instruction={instruction}")
-        #
-        #     def produce(self):
-        #         # self._revpi.cycleloop(self._cycle_handler, cycletime=25)
-        #         while True:
-        #             self._cycle_handler(1)
-        #             sleep(0.025)
-        #
-        # daq = DAQ(self._producer_socketio, self._producer_conn)
-        # daq._revpi.cycleloop(daq._cycle_handler, cycletime=25)
+        daq = DAQ(self._producer_socketio, self._producer_conn)
+        print("3333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333")
+        daq.produce()
+        print("4444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444")
 
     def control_stream(self, instruction):
         if instruction == "start_stream":
