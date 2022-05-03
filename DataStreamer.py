@@ -34,7 +34,6 @@ class DataStreamer:
                 # self._revpi = revpimodio2.RevPiModIO(autorefresh=True, debug=True) # this line breaks everything, I don't know why
 
             def _cycle_handler(self, ct):
-                print("Entering _cycle_handler...")
                 if self._produce_stream:
                     new_data = randint(-500, 500)/100
                     # new_data = self._revpi.io.InputValue_1.value/1000
