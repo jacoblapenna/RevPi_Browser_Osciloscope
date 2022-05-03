@@ -52,23 +52,7 @@ class DataStreamer:
                         raise Exception(f"Producer received invalid instruction: instruction={instruction}")
 
             def produce(self):
-                # self._daq.cycleloop(self._cycle_handler, cycletime=25)
-                self._conn.send("Producing...")
-                while True:
-                    if self._produce_stream:
-                        new_data = round(randint(-1000, 1000)/100, 2)
-                        self._socketio.emit("new_data", {"data" : new_data}) # emit here
-                    if self._conn.poll():
-                        instruction = self._conn.recv()
-                        if instruction == "start_stream":
-                            self._produce_stream = True
-                            self._socketio.emit("stream_started")
-                        elif instruction == "stop_stream":
-                            self._produce_stream = False
-                            self._socketio.emit("stream_stopped")
-                        else:
-                            raise Exception("Invalid instruction!")
-                    sleep(0.1)
+                self._daq.cycleloop(self._cycle_handler, cycletime=25)
 
         daq = DAQ(self._producer_socketio, self._producer_conn)
         daq.produce()
