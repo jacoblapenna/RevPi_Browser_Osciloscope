@@ -15,6 +15,7 @@ class DataStreamer:
         self._controller_conn, self._producer_conn = Pipe()
         self._producer_process = Process(target=self._produce, name="producer_process")
         self._producer_process.start()
+        self._revpi = revpimodio2.RevPiModIO(autorefresh=True)
 
     def _produce(self):
         """
@@ -35,7 +36,7 @@ class DataStreamer:
                 self.buffer = []
                 self._socketio = socketio
                 self._conn = conn
-                self._revpi = revpimodio2.RevPiModIO(autorefresh=True)
+                # self._revpi = revpimodio2.RevPiModIO(autorefresh=True)
 
             def _cycle_handler(self, ct):
                 if self._produce_stream:
