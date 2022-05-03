@@ -55,6 +55,7 @@ class DataStreamer:
 
             def produce(self):
                 # self._revpi.cycleloop(self._cycle_handler, cycletime=25)
+                self._produce_stream = False
                 while True:
                     self._cycle_handler(1)
                     sleep(0.025)
