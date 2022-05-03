@@ -53,6 +53,7 @@ class DataStreamer:
 
             def produce(self):
                 # self._daq.cycleloop(self._cycle_handler, cycletime=25)
+                self._conn.send("Producing...")
                 while True:
                     if self._produce_stream:
                         new_data = round(randint(-1000, 1000)/100, 2)
@@ -79,3 +80,5 @@ class DataStreamer:
             self._controller_conn.send(instruction)
         else:
             raise Exception(f"Attempt to send invalid instruction to producer: instruction={instruction}")
+        if self.controller_conn.poll(10):
+            print(self._controller_conn.recv())
