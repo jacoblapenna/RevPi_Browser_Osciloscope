@@ -16,8 +16,8 @@ from flask_socketio import SocketIO
 import eventlet
 eventlet.monkey_patch()
 
-app = Flask(__name__)
-socketio = SocketIO(app, message_queue='redis://')
+# app = Flask(__name__)
+# socketio = SocketIO(app, message_queue='redis://')
 streamer = DataStreamer()
 
 @app.route('/')
