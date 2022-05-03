@@ -39,23 +39,23 @@ class DataStreamer:
                 # self._revpi = revpimodio2.RevPiModIO(autorefresh=True)
 
             def _cycle_handler(self, ct):
-                if self._produce_stream:
-                    new_data = randint(-500, 500)/100
-                    self._socketio.emit("new_data", {"data" : new_data})
-                if self._conn.poll():
-                    instruction = self._conn.recv()
-                    if instruction == "start_stream":
-                        self._produce_stream = True
-                        self._socketio.emit("stream_started")
-                    elif instruction == "stop_stream":
-                        self._produce_stream = False
-                        self._socketio.emit("stream_stopped")
-                    else:
-                        raise Exception(f"Producer received invalid instruction: instruction={instruction}")
+                pass
+                # if self._produce_stream:
+                #     new_data = randint(-500, 500)/100
+                #     self._socketio.emit("new_data", {"data" : new_data})
+                # if self._conn.poll():
+                #     instruction = self._conn.recv()
+                #     if instruction == "start_stream":
+                #         self._produce_stream = True
+                #         self._socketio.emit("stream_started")
+                #     elif instruction == "stop_stream":
+                #         self._produce_stream = False
+                #         self._socketio.emit("stream_stopped")
+                #     else:
+                #         raise Exception(f"Producer received invalid instruction: instruction={instruction}")
 
             def produce(self):
                 # self._revpi.cycleloop(self._cycle_handler, cycletime=25)
-                self._produce_stream = False
                 while True:
                     self._cycle_handler(1)
                     sleep(0.025)
