@@ -54,10 +54,10 @@ class DataStreamer:
                         raise Exception(f"Producer received invalid instruction: instruction={instruction}")
 
             def produce(self):
-                # self._revpi.cycleloop(self._cycle_handler, cycletime=25)
-                while True:
-                    self._cycle_handler(1)
-                    sleep(0.025)
+                self._revpi.cycleloop(self._cycle_handler, cycletime=25)
+                # while True:
+                #     self._cycle_handler(1)
+                #     sleep(0.025)
 
         daq = DAQ(self._producer_socketio, self._producer_conn)
         daq.produce()
