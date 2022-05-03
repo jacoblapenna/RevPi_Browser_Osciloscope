@@ -1,3 +1,4 @@
+
 from multiprocessing import Pipe, Process
 import revpimodio2
 
@@ -25,20 +26,21 @@ class DataStreamer:
         This process is always running and whether data is streamed or not is
         determined via duplex communication through the pipe.
         """
+        from hanging_threads import start_monitoring
+        start_monitoring()
         class DAQ:
             def __init__(self, socketio, conn):
                 self._produce_stream = False
                 self.buffer = []
                 self._socketio = socketio
                 self._conn = conn
-                self._revpi = revpimodio2.RevPiModIO(autorefresh=True, debug=True) # this line breaks everything, I don't know why
+                # self._revpi = revpimodio2.RevPiModIO(autorefresh=True, debug=True) # this line breaks everything, I don't know why
 
             def _cycle_handler(self, ct):
                 if self._produce_stream:
                     new_data = randint(-500, 500)/100
                     # new_data = self._revpi.io.InputValue_1.value/1000
-                    # self._socketio.emit("new_data", {"data" : new_data})
-                    print(new_data)
+                    self._socketio.emit("new_data", {"data" : new_data})
                 if self._conn.poll():
                     instruction = self._conn.recv()
                     if instruction == "start_stream":
