@@ -36,7 +36,7 @@ class DataStreamer:
                 self.buffer = []
                 self._socketio = socketio
                 self._conn = conn
-                # self._daq = revpimodio2.RevPiModIO(autorefresh=True)
+                self._revpi = revpimodio2.RevPiModIO(autorefresh=True)
 
             def _cycle_handler(self, ct):
                 if self._produce_stream:
@@ -54,7 +54,7 @@ class DataStreamer:
                         raise Exception(f"Producer received invalid instruction: instruction={instruction}")
 
             def produce(self):
-                # self._daq.cycleloop(self._cycle_handler, cycletime=25)
+                # self._revpi.cycleloop(self._cycle_handler, cycletime=25)
                 while True:
                     self._cycle_handler(1)
                     sleep(0.025)
