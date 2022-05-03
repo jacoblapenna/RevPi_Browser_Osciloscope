@@ -48,8 +48,7 @@ class DataStreamer:
         class DAQ:
             def __init__(self, socketio, conn):
                 self._produce_stream = False
-                self._socketio = socketio
-                self._conn = conn
+                self.buffer = []
                 self._daq = revpimodio2.RevPiModIO(autorefresh=True)
 
             def _cycle_handler(self, ct):
@@ -70,9 +69,7 @@ class DataStreamer:
             def produce(self):
                 self._daq.cycleloop(self._cycle_handler, cycletime=25)
 
-        socketio = self._producer_socketio
-        conn = self._producer_conn
-        daq = DAQ(socketio, conn)
+        daq = DAQ(self._producer_socketio, self._producer_conn)
         daq.produce()
 
     def control_stream(self, instruction):
