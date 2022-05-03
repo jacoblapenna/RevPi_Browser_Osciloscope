@@ -37,7 +37,9 @@ class DataStreamer:
                 print("Entering _cycle_handler...")
                 if self._produce_stream:
                     new_data = randint(-500, 500)/100
-                    self._socketio.emit("new_data", {"data" : new_data})
+                    # new_data = self._revpi.io.InputValue_1.value/1000
+                    # self._socketio.emit("new_data", {"data" : new_data})
+                    print(new_data)
                 if self._conn.poll():
                     instruction = self._conn.recv()
                     if instruction == "start_stream":
