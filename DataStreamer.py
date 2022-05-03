@@ -24,10 +24,6 @@ class DataStreamer:
 
         This process is always running and whether data is streamed or not is
         determined via duplex communication through the pipe.
-
-        Eventually, an instruction will need to  be added to stop and restart
-        the pipe and process. This should be done whenever control is taken
-        and given up.
         """
         class DAQ:
             def __init__(self, socketio, conn):
@@ -35,7 +31,7 @@ class DataStreamer:
                 self.buffer = []
                 self._socketio = socketio
                 self._conn = conn
-                # self._revpi = revpimodio2.RevPiModIO(autorefresh=True, debug=True)
+                # self._revpi = revpimodio2.RevPiModIO(autorefresh=True, debug=True) # this line breaks everything, I don't know why
 
             def _cycle_handler(self, ct):
                 print("Entering _cycle_handler...")
