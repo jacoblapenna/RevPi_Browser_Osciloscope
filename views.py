@@ -5,8 +5,6 @@ Created on Tue Mar 29 09:16:40 2022
 @author: jlapenna
 """
 
-from hanging_threads import start_monitoring
-start_monitoring()
 
 import redis
 
