@@ -37,21 +37,6 @@ class DataStreamer:
                 self._daq = revpimodio2.RevPiModIO(autorefresh=True)
 
             def _cycle_handler(self, ct):
-                while True:
-                    if self._produce_stream:
-                        new_data = round(randint(-1000, 1000)/100, 2)
-                        self._socketio.emit("new_data", {"data" : new_data}) # emit here
-                    if self._conn.poll():
-                        instruction = self._conn.recv()
-                        if instruction == "start_stream":
-                            self._produce_stream = True
-                            self._socketio.emit("stream_started")
-                        elif instruction == "stop_stream":
-                            self._produce_stream = False
-                            self._socketio.emit("stream_stopped")
-                        else:
-                            raise Exception("Invalid instruction!")
-                    sleep(0.1)
                 # if self._produce_stream:
                 #     new_data = self._daq.io.InputValue_1.value/1000
                 #     self._socketio.emit("new_data", {"data" : 0.00})
@@ -70,7 +55,23 @@ class DataStreamer:
                 self._daq.cycleloop(self._cycle_handler, cycletime=25)
 
         daq = DAQ(self._producer_socketio, self._producer_conn)
-        daq._cycle_handler(1)
+        # daq._cycle_handler(1)
+
+        while True:
+            if daq._produce_stream:
+                new_data = round(randint(-1000, 1000)/100, 2)
+                daq._socketio.emit("new_data", {"data" : new_data}) # emit here
+            if daq._conn.poll():
+                instruction = daq._conn.recv()
+                if instruction == "start_stream":
+                    daq._produce_stream = True
+                    daq._socketio.emit("stream_started")
+                elif instruction == "stop_stream":
+                    daq._produce_stream = False
+                    daq._socketio.emit("stream_stopped")
+                else:
+                    raise Exception("Invalid instruction!")
+            sleep(0.1)
 
     def control_stream(self, instruction):
         if instruction == "start_stream":
