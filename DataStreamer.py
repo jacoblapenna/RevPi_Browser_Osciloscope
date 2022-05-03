@@ -31,7 +31,7 @@ class DataStreamer:
                 self.buffer = []
                 self._socketio = socketio
                 self._conn = conn
-                # self._revpi = revpimodio2.RevPiModIO(autorefresh=True, debug=True) # this line breaks everything, I don't know why
+                self._revpi = revpimodio2.RevPiModIO(autorefresh=True, debug=True) # this line breaks everything, I don't know why
 
             def _cycle_handler(self, ct):
                 if self._produce_stream:
