@@ -39,7 +39,7 @@ if __name__ == "__main__":
     else:
         raise Exception("Check that redis-server.service is running!")
     server = Server()
-    streamer = DataStreamer()
+    # streamer = DataStreamer()
     socketio.run(app,
                  host=server.ip,
                  port=8080,
