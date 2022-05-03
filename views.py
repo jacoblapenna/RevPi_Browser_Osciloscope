@@ -18,7 +18,6 @@ eventlet.monkey_patch()
 
 app = Flask(__name__)
 socketio = SocketIO(app, message_queue='redis://')
-streamer = DataStreamer()
 
 @app.route('/')
 def index():
@@ -39,6 +38,7 @@ if __name__ == "__main__":
     else:
         raise Exception("Check that redis-server.service is running!")
     server = Server()
+    streamer = DataStreamer()
     socketio.run(app,
                  host=server.ip,
                  port=8080,
