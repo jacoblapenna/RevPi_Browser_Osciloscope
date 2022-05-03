@@ -10,27 +10,27 @@ import redis
 from Server import Server
 from DataStreamer import DataStreamer
 
-from flask import Flask, render_template
-from flask_socketio import SocketIO
-
-import eventlet
-eventlet.monkey_patch()
+# from flask import Flask, render_template
+# from flask_socketio import SocketIO
+#
+# import eventlet
+# eventlet.monkey_patch()
 
 # app = Flask(__name__)
 # socketio = SocketIO(app, message_queue='redis://')
 streamer = DataStreamer()
 
-@app.route('/')
-def index():
-    return render_template("index.html")
-
-@socketio.on("start_stream")
-def start_stream():
-    streamer.control_stream("start_stream")
-
-@socketio.on("stop_stream")
-def stop_stream():
-    streamer.control_stream("stop_stream")
+# @app.route('/')
+# def index():
+#     return render_template("index.html")
+#
+# @socketio.on("start_stream")
+# def start_stream():
+#     streamer.control_stream("start_stream")
+#
+# @socketio.on("stop_stream")
+# def stop_stream():
+#     streamer.control_stream("stop_stream")
 
 if __name__ == "__main__":
     if redis.Redis().ping():
