@@ -38,6 +38,7 @@ class DataStreamer:
                 self._revpi = revpimodio2.RevPiModIO(autorefresh=True, debug=True)
 
             def _cycle_handler(self, ct):
+                print("Entering _cycle_handler...")
                 if self._produce_stream:
                     new_data = randint(-500, 500)/100
                     self._socketio.emit("new_data", {"data" : new_data})
