@@ -11,7 +11,7 @@ class DataStreamer:
     pull from AIO on revpi here when ready
     """
     def __init__(self):
-        # self._produce_stream = False # TEMP
+        self._produce_stream = False # TEMP
         self._producer_socketio = SocketIO(message_queue='redis://')
         self._controller_conn, self._producer_conn = Pipe()
         self._producer_process = Process(target=self._produce, name="producer_process")
