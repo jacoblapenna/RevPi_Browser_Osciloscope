@@ -58,8 +58,8 @@ class DataStreamer:
                     self._cycle_handler(1)
                     sleep(0.025)
 
-        daq = DAQ(self._producer_socketio, self._producer_conn)
         daq.produce()
+        daq = DAQ(self._producer_socketio, self._producer_conn)
 
     def control_stream(self, instruction):
         if instruction == "start_stream":
