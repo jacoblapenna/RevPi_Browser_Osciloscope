@@ -1,13 +1,10 @@
-import eventlet
-eventlet.monkey_patch()
-
 from multiprocessing import Pipe, Process
 import revpimodio2
 
 from random import randint
 from time import sleep
 
-from flask_socketio import SocketIO
+# from flask_socketio import SocketIO
 
 class DataStreamer:
     """
@@ -58,9 +55,7 @@ class DataStreamer:
                     sleep(0.025)
 
         daq = DAQ(self._producer_socketio, self._producer_conn)
-        print("3333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333")
         daq.produce()
-        print("4444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444")
 
     def control_stream(self, instruction):
         if instruction == "start_stream":
