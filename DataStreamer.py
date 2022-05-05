@@ -1,4 +1,3 @@
-
 from multiprocessing import Pipe, Process
 import revpimodio2
 
@@ -31,9 +30,7 @@ class DataStreamer:
                 self._produce_stream = False
                 self._socketio = socketio
                 self._conn = conn
-                print("1111111111111111111111111111111111111111111111111111111111111111111111111111111111111")
                 self._revpi = revpimodio2.RevPiModIO(autorefresh=True, debug=True) # this line breaks everything, I don't know why
-                print("222222222222222222222222222222222222222222222222222222222222222222222222222222222222222")
 
             def _cycle_handler(self, ct):
                 if self._produce_stream:

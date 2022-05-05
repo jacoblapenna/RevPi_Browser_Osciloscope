@@ -4,7 +4,8 @@ Created on Tue Mar 29 09:16:40 2022
 
 @author: jlapenna
 """
-
+import eventlet
+eventlet.monkey_patch()
 
 import redis
 
@@ -13,9 +14,6 @@ from DataStreamer import DataStreamer
 
 from flask import Flask, render_template
 from flask_socketio import SocketIO
-
-import eventlet
-eventlet.monkey_patch()
 
 app = Flask(__name__)
 socketio = SocketIO(app, message_queue='redis://')
