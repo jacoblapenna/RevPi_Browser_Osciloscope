@@ -4,7 +4,7 @@ import revpimodio2
 from random import randint
 from time import sleep
 
-# from flask_socketio import SocketIO
+from flask_socketio import SocketIO
 
 class DataStreamer:
     """
