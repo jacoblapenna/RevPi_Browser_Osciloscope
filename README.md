@@ -30,4 +30,7 @@ Where sr is the sample rate, 5 is the number of divisions on the oscilloscope, a
 The static/js/Deque.mjs impliments a custom JavaScript data structure that mimics the python deque data structure (i.e. O(1) FIFO array). This structure also is responsible for drawing the oscilloscope and has methods for automatic marking of local extrema of the data. This is depicted in the following image showing a 0.1 Hz sine wave with local extrema shown at the red dots. This extrema detection is provided on the front end by the static/js/ExtremaDetector.mjs object, and its ability to correctly find extrema is based on the input threshold and signal noise. If extrema detection is desired on the back end instead, simply deploy similar code in a python class.
 
 
+![alt text](https://github.com/jacoblapenna/RevPi_Browser_Osciloscope/blob/master/static/im/Scope_Screenshot.PNG?raw=true)
+
+
 This is a very basic oscilloscope application, and is not maintained regularly. It merely serves as an example to start similar, more complex projects with the Revolution Pi.
