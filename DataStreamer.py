@@ -1,3 +1,6 @@
+import eventlet
+eventlet.monkey_patch()
+
 from multiprocessing import Pipe, Process
 import revpimodio2
 
